@@ -1,10 +1,10 @@
-import LoginPage from "./pages/register";
+import StudentRegistration from "./pages/studentRegister";
 
 export default function Home() {
   return (
     <div className="h-20">
       <main>
-        <LoginPage />
+        <StudentRegistration />
       </main>
     </div>
   );

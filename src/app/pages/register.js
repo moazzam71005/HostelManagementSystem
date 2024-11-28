@@ -7,6 +7,7 @@ import CardHeader from "../components/ui/card/cardheader";
 import CardTitle from "../components/ui/card/cardtitle";
 import CardDescription from "../components/ui/card/carddescription";
 import CardContent from "../components/ui/card/cardcontent";
+import { SelectTrigger } from '../components/ui/selecttrigger';
 
 
 export default function RegisterAccount() {
