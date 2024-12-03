@@ -101,7 +101,7 @@ export default function StudentDashboard() {
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                   <DialogDescription>
-                    Make changes to your profile here. Click save when you're done.
+                    Make changes to your profile here. Click save when you&apos;re done.
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleProfileUpdate} className="space-y-4">
@@ -111,7 +111,7 @@ export default function StudentDashboard() {
                       <Input id="name" name="name" value={student.name} onChange={handleProfileChange} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="fathersName">Father's Name</Label>
+                      <Label htmlFor="fathersName">Father&apos;s Name</Label>
                       <Input id="fathersName" name="fathersName" value={student.fathersName} onChange={handleProfileChange} />
                     </div>
                     <div className="space-y-2">
@@ -211,7 +211,7 @@ export default function StudentDashboard() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Submit a Complaint</DialogTitle>
-                <DialogDescription>Describe your issue in detail. We'll get back to you as soon as possible.</DialogDescription>
+                <DialogDescription>Describe your issue in detail. We&apos;ll get back to you as soon as possible.</DialogDescription>
               </DialogHeader>
               <form className="space-y-4">
                 <div>

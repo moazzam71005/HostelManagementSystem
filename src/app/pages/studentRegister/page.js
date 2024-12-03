@@ -89,7 +89,7 @@ export default function StudentRegistration() {
                 <Input id="name" name="name" type="text" required value={formData.name} onChange={handleInputChange} />
               </div>
               <div>
-                <Label htmlFor="fathersName">Father's Name</Label>
+                <Label htmlFor="fathersName">Father&apos;s Name</Label>
                 <Input id="fathersName" name="fathersName" type="text" required value={formData.fathersName} onChange={handleInputChange} />
               </div>
               <div>
