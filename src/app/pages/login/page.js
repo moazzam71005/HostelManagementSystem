@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Button } from '../components/ui/button'
-import { Input } from "../components/ui/input"
-import { Label } from '../components/ui/label'
+import { Button } from '../../components/ui/button'
+import { Input } from "../../components/ui/input"
+import { Label } from '../../components/ui/label'
+import {useRouter} from 'next/navigation'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
+  const router = useRouter();
   const handleSubmit = (e) => {
     e.preventDefault()
     // Handle login logic here
@@ -86,9 +87,17 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div>
+            <div className='space-y-[1vh]'>
               <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Sign in
+              </Button>
+              <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to student Dashboard');
+            router.push("/pages/studentDashboard")}}>
+                Student Dashboard
+              </Button>
+              <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to Manager Dashboard');
+            router.push("/pages/managerDashboard")}}>
+                Manager Dashboard
               </Button>
             </div>
           </form>
@@ -105,7 +114,7 @@ export default function LoginPage() {
 
             <div className="mt-6">
               <div>
-                <Link href="/signup" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <Link href="/pages/register" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                   Create new account
                 </Link>
               </div>
