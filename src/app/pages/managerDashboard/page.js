@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { AlertCircle, ClipboardList, UtensilsCrossed, LogOut } from 'lucide-react'
 import {useRouter} from 'next/navigation'
+
+
 export default function ManagerDashboard() {
   const router = useRouter();
   // Mock data - replace with actual data fetching logic
