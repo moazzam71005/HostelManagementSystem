@@ -43,10 +43,36 @@ export default function StudentRegistration() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent form from refreshing the page
+  
+    try {
+      console.log('1');
+      const response = await fetch('http://localhost:5000/api/student', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Let the server know the data format
+        },
+        body: JSON.stringify(formData), // Send the form data
+      });
+      
+      console.log('2');
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('3');
+        alert(result.message); // Show success message
+      } else {
+        console.log('4');
+        console.error(result.error); // Log the error
+        alert('Error: ' + result.error); // Show error message
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error: ' + error.message);
+    }
   };
+  
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
