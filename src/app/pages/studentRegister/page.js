@@ -9,12 +9,12 @@ import { UserCircle } from 'lucide-react';
 
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({
+    registrationNo: '',
     name: '',
     fathersName: '',
     email: '',
     nustemail: '',
     contactNo: '',
-    registrationNo: '',
     school: '',
     batch: '',
     discipline: '',
@@ -111,6 +111,10 @@ export default function StudentRegistration() {
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
+                <Label htmlFor="registrationNo">Registration No.</Label>
+                <Input id="registrationNo" name="registrationNo" type="text" required value={formData.registrationNo} onChange={handleInputChange} />
+              </div>
+              <div>
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" name="name" type="text" required value={formData.name} onChange={handleInputChange} />
               </div>
@@ -130,10 +134,7 @@ export default function StudentRegistration() {
                 <Label htmlFor="contactNo">Contact No.</Label>
                 <Input id="contactNo" name="contactNo" type="tel" required value={formData.contactNo} onChange={handleInputChange} />
               </div>
-              <div>
-                <Label htmlFor="registrationNo">Registration No.</Label>
-                <Input id="registrationNo" name="registrationNo" type="text" required value={formData.registrationNo} onChange={handleInputChange} />
-              </div>
+              
               <div>
                 <Label htmlFor="gender">Gender</Label>
                 <select
