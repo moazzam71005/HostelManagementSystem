@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -11,10 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { AlertCircle, ClipboardList, UtensilsCrossed, LogOut } from 'lucide-react'
 import {useRouter} from 'next/navigation'
+import supabase from "../../../supabaseClient"
+
 
 
 export default function ManagerDashboard() {
   const router = useRouter();
+
+
   // Mock data - replace with actual data fetching logic
   const [complaints, setComplaints] = useState([
     { 
@@ -65,12 +69,47 @@ export default function ManagerDashboard() {
     { id: 2, studentName: 'Diana Prince', regNo: '2021CS103', roomNo: 'G707', type: 'In', date: '2024-03-07', reason: 'Returned from home', placeOfLeave: 'N/A' },
   ])
 
-  const manager = {
+
+
+  const [manager, setManager] = useState({
     name: "Jane Doe",
     role: "Hostel Manager",
-    hostel: "Attar",
-    profilePic: "/placeholder.svg"
-  }
+    hostel: "Beruni",
+    profilePic: "/placeholder.svg",
+  });
+
+  const [loading, setLoading] = useState(true); // Add a loading state
+
+  useEffect(() => {
+    const fetchManagerData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("testmanager") // Replace "managers" with your table name
+        .select("*")
+        .eq("hostel", "Attar"); // Adjust the filter based on your criteria (e.g., ID, role, etc.)
+
+      if (error) {
+        console.error("Error fetching manager data:", error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const fetchedManager = data[0];
+        setManager({
+          name: fetchedManager.name,
+          role: fetchedManager.designation,
+          hostel: fetchedManager.hostel,
+          profilePic: fetchedManager.profilePic || "/placeholder.svg", // Use a default profile picture if not provided
+        });
+      }
+
+      setLoading(false);
+    };
+
+    fetchManagerData();
+  }, []); // Empty dependency array means this runs once when the component mounts
+
 
   const getStatusBadge = (status) => {
     switch (status.toLowerCase()) {

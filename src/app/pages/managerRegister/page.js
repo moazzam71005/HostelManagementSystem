@@ -39,9 +39,34 @@ export default function ManagerRegistration() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    //console.log('Form submitted:', formData);
+    try {
+      console.log('1');
+      const response = await fetch('http://localhost:5000/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Let the server know the data format
+        },
+        body: JSON.stringify(formData), // Send the form data
+      });
+      
+      console.log('2');
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('3');
+        alert(result.message); // Show success message
+      } else {
+        console.log('4');
+        console.error(result.error); // Log the error
+        alert('Error: ' + result.error); // Show error message
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error: ' + error.message);
+    }
   };
 
   const triggerFileInput = () => {

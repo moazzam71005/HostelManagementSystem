@@ -1,3 +1,6 @@
+/**
+
+
 import supabase from 'D:\NUST\DataBase Systems\HostelManagementSystem\src\supabaseClient'; // Import Supabase client
 
 export default async function handler(req, res) {
@@ -16,4 +19,4 @@ export default async function handler(req, res) {
   } else {
     return res.status(405).json({ error: 'Method not allowed' }); // Only POST requests are allowed
   }
-}
+} */

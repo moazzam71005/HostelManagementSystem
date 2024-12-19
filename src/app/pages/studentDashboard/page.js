@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, Brush, MessageSquare, Phone, UtensilsCrossed, LogOut, UserCircle, Car } from 'lucide-react'
+import supabase from "../../../supabaseClient"
+import ComplaintForm from '../complaintForm'
 
 export default function StudentDashboard() {
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
@@ -26,11 +28,48 @@ export default function StudentDashboard() {
     school: "SEECS",
     batch: "2021",
     discipline: "Computer Science",
-    hostel: "Attar",
+    hostel: "Beruni",
     roomNo: "A-101",
     gender: "Male",
     profilePic: "/placeholder.svg"
   })
+
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      const { data, error } = await supabase
+        .from("testuser") // Replace "students" with your table name
+        .select("*")
+        .eq("email", "masterdawg@gmail.com"); // Adjust the filter as needed (e.g., by ID, registration number, etc.)
+
+      if (error) {
+        console.error("Error fetching student data:", error.message);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const fetchedStudent = data[0];
+        setStudent({
+          name: fetchedStudent.name,
+          fathersName: fetchedStudent.fatherName,
+          email: fetchedStudent.email,
+          contactNo: fetchedStudent.contactno,
+          registrationNo: fetchedStudent.id,
+          school: fetchedStudent.school,
+          batch: fetchedStudent.batch,
+          discipline: fetchedStudent.discipline,
+          hostel: fetchedStudent.hostel,
+          roomNo: fetchedStudent.roomno,
+          gender: fetchedStudent.gender,
+          profilePic: "/placeholder.svg",
+        });
+      }
+    };
+
+    fetchStudentData();
+  }, []);
+
+
 
   // Mock emergency contacts
   const emergencyContacts = [
@@ -194,53 +233,13 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    Register Complaint
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Click to submit a new complaint</p>
-                </CardContent>
-              </Card>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Submit a Complaint</DialogTitle>
-                <DialogDescription>Describe your issue in detail. We&apos;ll get back to you as soon as possible.</DialogDescription>
-              </DialogHeader>
-              <form className="space-y-4">
-                <div>
-                  <Label htmlFor="complaint-title">Complaint Title</Label>
-                  <Input id="complaint-title" placeholder="Brief description of the issue" />
-                </div>
-                <div>
-                  <Label htmlFor="complaint-type">Complaint Type</Label>
-                  <Select>
-                    <SelectTrigger id="complaint-type">
-                      <SelectValue placeholder="Select complaint type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="electric">Electric</SelectItem>
-                      <SelectItem value="wood">Wood</SelectItem>
-                      <SelectItem value="aluminium">Aluminium</SelectItem>
-                      <SelectItem value="plumber">Plumber</SelectItem>
-                      <SelectItem value="miscellaneous">Miscellaneous</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="complaint-details">Details</Label>
-                  <Textarea id="complaint-details" placeholder="Provide more information about your complaint" />
-                </div>
-                <Button type="submit">Submit Complaint</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div>
+            <ComplaintForm />
+          </div>
+
+
+
+
 
           <Dialog>
             <DialogTrigger asChild>
