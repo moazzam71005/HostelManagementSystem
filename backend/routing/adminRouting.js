@@ -30,7 +30,7 @@ const validateData = (processedData) => {
 
 
 
-// Handle POST request to /student
+// Handle POST request 
 router.post('/', async (req, res) => {
     const formData = req.body; // Get form data sent from frontend
     console.log('Received form data:', formData);

@@ -1,19 +1,26 @@
 import supabase from '../../src/supabaseClient.js';  
 import express from 'express';
-const router = express.Router(); // Use express.Router() to define routes
-//const supabase = require('../../src/supabaseClient'); 
-
+const router = express.Router();
 
 // Handle POST request to /student
 router.post('/', async (req, res) => {
     const formData = req.body; // Get form data sent from frontend
     console.log('Received form data:', formData);
 
+    // Convert the string dates into proper date format (YYYY-MM-DD)
+    const processedData = {
+        requestDate: new Date(formData.requestDate).toISOString().split("T")[0],
+        leavingDate: new Date(formData.leavingDate).toISOString().split("T")[0],
+        arrivalDate: new Date(formData.arrivalDate).toISOString().split("T")[0],
+    };
+
+    console.log('Processed data:', processedData); // Log the processed data for verification
+
     try {
-        // Insert data into the 'students' table in Supabase
+        // Insert the processed data into the 'testmess' table in Supabase
         const { data, error } = await supabase
-            .from('students') // The name of your table in Supabase
-            .insert([formData]); // Insert the form data into the table
+            .from('testmess') // The name of your table in Supabase
+            .insert([processedData]); // Insert the processed data into the table
 
         if (error) {
             throw new Error(error.message); // If there's an error with the insertion
@@ -28,4 +35,3 @@ router.post('/', async (req, res) => {
 });
 
 export default router; // Export the router to be used in server.js
-

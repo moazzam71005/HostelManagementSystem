@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertCircle, Brush, MessageSquare, Phone, UtensilsCrossed, LogOut, UserCircle, Car } from 'lucide-react'
 import supabase from "../../../supabaseClient"
 import ComplaintForm from '../complaintForm'
+import MessForm from '../MessForm'
 
 export default function StudentDashboard() {
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
@@ -233,14 +234,11 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <div>
+          <div className='complaints-section'>
             <ComplaintForm />
           </div>
 
-
-
-
-
+          
           <Dialog>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
@@ -271,64 +269,9 @@ export default function StudentDashboard() {
             </DialogContent>
           </Dialog>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <UtensilsCrossed className="w-4 h-4" />
-                    Mess Off
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Request mess off for your absence</p>
-                </CardContent>
-              </Card>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Request Mess Off</DialogTitle>
-                <DialogDescription>Please provide the dates for your mess off request</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleMessOffSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="requestDate">Request Date</Label>
-                  <Input
-                    id="requestDate"
-                    name="requestDate"
-                    type="date"
-                    required
-                    value={messOffDates.requestDate}
-                    onChange={handleMessOffChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="leavingDate">Leaving Date</Label>
-                  <Input
-                    id="leavingDate"
-                    name="leavingDate"
-                    type="date"
-                    required
-                    value={messOffDates.leavingDate}
-                    onChange={handleMessOffChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="arrivalDate">Arrival Date</Label>
-                  <Input
-                    id="arrivalDate"
-                    name="arrivalDate"
-                    type="date"
-                    required
-                    value={messOffDates.arrivalDate}
-                    onChange={handleMessOffChange}
-                  />
-                </div>
-                {messOffError && <p className="text-red-500 text-sm">{messOffError}</p>}
-                <Button type="submit">Submit Request</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className='messform'>
+              <MessForm />
+          </div>
 
           <Dialog>
             <DialogTrigger asChild>
