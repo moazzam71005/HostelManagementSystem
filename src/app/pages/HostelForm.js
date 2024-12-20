@@ -26,6 +26,7 @@ const HostelForm = () => {
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog open state
   const [isSubmitting, setIsSubmitting] = useState(false); // Handle submitting state
+  const [submitMessage, setSubmitMessage] = useState(""); // Success or error message
   const [toastMessage, setToastMessage] = useState(""); // Toast message
   const [isToastVisible, setIsToastVisible] = useState(false); // Toast visibility
 
@@ -43,7 +44,7 @@ const HostelForm = () => {
     e.preventDefault();
 
     setIsSubmitting(true);
-    setToastMessage(""); // Reset any previous toast message
+    setSubmitMessage(""); // Reset any previous message
 
     // Submit data to the backend
     try {
@@ -58,13 +59,16 @@ const HostelForm = () => {
       const result = await response.json();
 
       if (response.ok) {
+        setSubmitMessage("Request successfully submitted!"); // Success message
         setToastMessage("Request successfully submitted!");
-        setIsDialogOpen(false); // Close dialog on success
+        setIsDialogOpen(false); // Close dialog
       } else {
+        setSubmitMessage(result.error || "Error occurred while submitting!"); // Error message
         setToastMessage(result.error || "Error occurred while submitting!");
       }
     } catch (error) {
       console.error("Network error:", error);
+      setSubmitMessage("Network error: " + error.message); // Network error message
       setToastMessage("Network error: " + error.message);
     } finally {
       setIsSubmitting(false);
@@ -92,7 +96,7 @@ const HostelForm = () => {
           <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">🏠</span> {/* Example icon */}
+                <span className="w-4 h-4">\ud83c\udfe0</span> {/* Example icon */}
                 Hostel In/Out
               </CardTitle>
             </CardHeader>
@@ -159,7 +163,7 @@ const HostelForm = () => {
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
+              {isSubmitting ? "Submitting..." : "Submit Request"}
             </Button>
           </form>
         </DialogContent>

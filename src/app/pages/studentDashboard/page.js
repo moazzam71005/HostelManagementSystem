@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, Brush, MessageSquare, Phone, UtensilsCrossed, LogOut, UserCircle, Car } from 'lucide-react'
 import supabase from "../../../supabaseClient"
-import ComplaintForm from '../complaintForm'
+import ComplaintForm from '../ComplaintForm'
 import MessForm from '../MessForm'
+import HostelForm from '../HostelForm'
 
 export default function StudentDashboard() {
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
@@ -273,46 +274,9 @@ export default function StudentDashboard() {
               <MessForm />
           </div>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <LogOut className="w-4 h-4" />
-                    Hostel In/Out
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Register your hostel entry/exit</p>
-                </CardContent>
-              </Card>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Hostel In/Out</DialogTitle>
-                <DialogDescription>Please provide details for your hostel entry/exit</DialogDescription>
-              </DialogHeader>
-              <form className="space-y-4">
-                <div>
-                  <Label htmlFor="purpose">Purpose</Label>
-                  <Input id="purpose" placeholder="Reason for leaving/entering" required />
-                </div>
-                <div>
-                  <Label htmlFor="placeOfLeave">Place of Leave</Label>
-                  <Input id="placeOfLeave" placeholder="Where are you going?" required />
-                </div>
-                <div>
-                  <Label htmlFor="dateOfLeave">Date of Leave</Label>
-                  <Input id="dateOfLeave" type="date" required />
-                </div>
-                <div>
-                  <Label htmlFor="dateOfArrival">Date of Arrival</Label>
-                  <Input id="dateOfArrival" type="date" required />
-                </div>
-                <Button type="submit">Submit</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className = 'hostelform'>
+            <HostelForm />
+          </div>
 
           <Dialog>
             <DialogTrigger asChild>

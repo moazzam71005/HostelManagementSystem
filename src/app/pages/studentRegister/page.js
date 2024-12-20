@@ -14,6 +14,7 @@ export default function StudentRegistration() {
     fathersName: '',
     email: '',
     nustemail: '',
+    password: '',
     contactNo: '',
     school: '',
     batch: '',
@@ -130,6 +131,55 @@ export default function StudentRegistration() {
                 <Label htmlFor="nustemail">NUST Email</Label>
                 <Input id="nustemail" name="nustemail" type="email" required value={formData.nustemail} onChange={handleInputChange} />
               </div>
+              <div>
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={formData.showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 px-3 text-gray-600"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }))
+                  }
+                >
+                  {formData.showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={formData.showConfirmPassword ? "text" : "password"}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 px-3 text-gray-600"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      showConfirmPassword: !prev.showConfirmPassword,
+                    }))
+                  }
+                >
+                  {formData.showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
+
+
               <div>
                 <Label htmlFor="contactNo">Contact No.</Label>
                 <Input id="contactNo" name="contactNo" type="tel" required value={formData.contactNo} onChange={handleInputChange} />
