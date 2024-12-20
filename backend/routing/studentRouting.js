@@ -1,84 +1,123 @@
-import supabase from '../../src/supabaseClient.js';  
 import express from 'express';
+import bcrypt from 'bcrypt';
+import supabase from '../../src/supabaseClient.js';
+
 const router = express.Router(); // Use express.Router() to define routes
 
+// -------------------- DATA VALIDATION -------------------- //
 const validateData = (processedData) => {
     const errors = [];
 
-    const idPattern = /^[0-9]{6}$/;  // Matches exactly 6 digits
-    if(!idPattern.test(processedData.id)){
-        errors.push("Invalid CMS ID.");
+    // CMS ID: Exactly 6 digits
+    const idPattern = /^[0-9]{6}$/;
+    if (!idPattern.test(processedData.id)) {
+        errors.push("Invalid CMS ID: Must be exactly 6 digits.");
     }
 
-    // Validate email
+    // Email: Valid format
     const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!emailPattern.test(processedData.email)) {
         errors.push("Invalid email format.");
     }
 
-    // Validate batch (positive integer)
+    // Batch: Positive integer
     const batch = parseInt(processedData.batch, 10);
     if (isNaN(batch) || batch <= 0) {
-        errors.push("Batch should be a positive integer.");
+        errors.push("Batch must be a positive integer.");
     }
 
-    // Validate phone number
+    // Contact number: Exactly 11 digits
     const phonePattern = /^[0-9]{11}$/;
     if (!phonePattern.test(processedData.contactno)) {
-        errors.push("Contact number must be a 11-digit number.");
+        errors.push("Contact number must be exactly 11 digits.");
     }
 
-    //Validate room number
+    // Room number: Exactly 3 digits
     const roomnoPattern = /^[0-9]{3}$/;
-    if(!roomnoPattern.test(processedData.roomno)){
-        errors.push("Invalid room number.");
+    if (!roomnoPattern.test(processedData.roomno)) {
+        errors.push("Room number must be exactly 3 digits.");
     }
 
     return errors;
 };
 
-// Handle POST request to /student
+// -------------------- POST REQUEST HANDLER -------------------- //
 router.post('/', async (req, res) => {
     const formData = req.body; // Get form data sent from frontend
     console.log('Received form data:', formData);
 
+    // Extract form data and prepare for processing
     const processedData = {
-        id: parseInt(formData.registrationNo, 10),
+        id: formData.registrationNo,  // CMS ID
         name: formData.name,
-        fatherName: formData.fathersName,
+        fathername: formData.fathername,
         email: formData.email,
         nustemail: formData.nustemail,
         contactno: formData.contactNo,
         school: formData.school,
-        batch: parseInt(formData.batch, 10),
+        batch: formData.batch,
         discipline: formData.discipline,
         hostel: formData.hostel,
-        roomno: parseInt(formData.roomNo, 10),
-        gender: formData.gender
+        roomno: formData.roomNo,
+        gender: formData.gender,
+        password: formData.password,          // Raw password
+        confirmPassword: formData.confirmPassword // Confirm password
     };
 
+    // Validate required fields
+    if (!processedData.password || !processedData.confirmPassword) {
+        return res.status(400).json({ error: "Password fields are required." });
+    }
+
+    // Check if passwords match
+    if (processedData.password !== processedData.confirmPassword) {
+        return res.status(400).json({ error: "Passwords do not match." });
+    }
+
+    // Run validation
     const validationErrors = validateData(processedData);
     if (validationErrors.length > 0) {
         console.log(validationErrors);
-        return res.status(400).json({ errors: validationErrors || 'done' }); // Return validation errors
+        return res.status(400).json({ errors: validationErrors }); // Return validation errors
     }
 
     try {
-        // Insert data into the 'testuser' table in Supabase
+        // Hash the password before storing
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(processedData.password, saltRounds);
+
+        // Prepare data for database insertion
+        const dbData = {
+            id: parseInt(processedData.id, 10),
+            name: processedData.name,
+            fathername: processedData.fathername,
+            email: processedData.email,
+            nustemail: processedData.nustemail,
+            contactno: processedData.contactno,
+            school: processedData.school,
+            batch: parseInt(processedData.batch, 10),
+            discipline: processedData.discipline,
+            hostel: processedData.hostel,
+            roomno: parseInt(processedData.roomno, 10),
+            gender: processedData.gender,
+            password_hash: hashedPassword, // Store hashed password
+        };
+
+        // Insert data into Supabase 'testuser' table
         const { data, error } = await supabase
-            .from('testuser') // The name of your table in Supabase
-            .insert(processedData); // Insert the form data into the table
+            .from('testuser')
+            .insert(dbData);
 
         if (error) {
-            console.error('Supabase Error:', error); // Log the error for debugging
-            return res.status(500).json({ error: error.message || 'Database insertion failed' }); // Send back a meaningful error message
+            console.error('Supabase Error:', error);
+            return res.status(500).json({ error: error.message || 'Database insertion failed' });
         }
 
         console.log('Data inserted successfully', data);
-        res.status(200).json({ message: 'Registration successful!' }); // Return success response
+        res.status(200).json({ message: 'Registration successful!' });
     } catch (error) {
         console.error('Error inserting data:', error);
-        res.status(500).json({ error: 'Database insertion failed: ' + error.message }); // Return detailed error message
+        res.status(500).json({ error: 'Database insertion failed: ' + error.message });
     }
 });
 

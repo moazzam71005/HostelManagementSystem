@@ -11,7 +11,7 @@ export default function StudentRegistration() {
   const [formData, setFormData] = useState({
     registrationNo: '',
     name: '',
-    fathersName: '',
+    fathername: '',
     email: '',
     nustemail: '',
     password: '',
@@ -120,8 +120,8 @@ export default function StudentRegistration() {
                 <Input id="name" name="name" type="text" required value={formData.name} onChange={handleInputChange} />
               </div>
               <div>
-                <Label htmlFor="fathersName">Father&apos;s Name</Label>
-                <Input id="fathersName" name="fathersName" type="text" required value={formData.fathersName} onChange={handleInputChange} />
+                <Label htmlFor="fathername">Father&apos;s Name</Label>
+                <Input id="fathername" name="fathername" type="text" required value={formData.fathername} onChange={handleInputChange} />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
@@ -196,8 +196,8 @@ export default function StudentRegistration() {
                   className="w-full p-2 border border-gray-300 rounded"
                 >
                   <option value="" disabled>Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                 </select>
               </div>
               <div>
