@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Input, Textarea } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AlertCircle, Brush, MessageSquare, Phone, UtensilsCrossed, LogOut, UserCircle, Car } from 'lucide-react'
 import supabase from "../../../supabaseClient"
@@ -17,75 +17,68 @@ import HostelForm from '../HostelForm'
 import VehicleForm from '../VehicleForm'
 
 export default function StudentDashboard() {
+  const searchParams = useSearchParams()
+  const studentId = searchParams.get('id')
+
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
+  const [student, setStudent] = useState(null)
   const [messOffDates, setMessOffDates] = useState({ requestDate: '', leavingDate: '', arrivalDate: '' })
   const [messOffError, setMessOffError] = useState('')
+  const [emergencyContacts, setEmergencyContacts] = useState([])
 
-  // Mock student data - replace with actual data fetching logic
-  const [student, setStudent] = useState({
-    name: "John Doe",
-    fathersName: "Michael Doe",
-    email: "john.doe@example.com",
-    contactNo: "+92 300 1234567",
-    registrationNo: "2021CS101",
-    school: "SEECS",
-    batch: "2021",
-    discipline: "Computer Science",
-    hostel: "Beruni",
-    roomNo: "A-101",
-    gender: "Male",
-    profilePic: "/placeholder.svg"
-  })
+  // Fetch student data based on the provided ID
+  useEffect(() => {
+    if (studentId) {
+      const fetchStudentData = async () => {
+        const { data, error } = await supabase
+          .from('testuser')
+          .select('*')
+          .eq('id', studentId)
+          .single()
 
+        if (error) {
+          console.error("Error fetching student data:", error.message)
+        } else {
+          setStudent({
+            name: data.name,
+            fathersName: data.fatherName,
+            email: data.email,
+            contactNo: data.contactno,
+            registrationNo: data.id,
+            school: data.school,
+            batch: data.batch,
+            discipline: data.discipline,
+            hostel: data.hostel,
+            roomNo: data.roomno,
+            gender: data.gender,
+            profilePic: "/placeholder.svg",
+          })
+        }
+      }
+
+      fetchStudentData()
+    }
+  }, [studentId])
 
   useEffect(() => {
-    const fetchStudentData = async () => {
+    const fetchEmergencyContacts = async () => {
       const { data, error } = await supabase
-        .from("testuser") // Replace "students" with your table name
-        .select("*")
-        .eq("email", "masterdawg@gmail.com"); // Adjust the filter as needed (e.g., by ID, registration number, etc.)
+        .from('emergency_contacts')
+        .select('*')
 
       if (error) {
-        console.error("Error fetching student data:", error.message);
-        return;
+        console.error("Error fetching emergency contacts:", error.message)
+      } else {
+        setEmergencyContacts(data)
       }
+    }
 
-      if (data && data.length > 0) {
-        const fetchedStudent = data[0];
-        setStudent({
-          name: fetchedStudent.name,
-          fathersName: fetchedStudent.fatherName,
-          email: fetchedStudent.email,
-          contactNo: fetchedStudent.contactno,
-          registrationNo: fetchedStudent.id,
-          school: fetchedStudent.school,
-          batch: fetchedStudent.batch,
-          discipline: fetchedStudent.discipline,
-          hostel: fetchedStudent.hostel,
-          roomNo: fetchedStudent.roomno,
-          gender: fetchedStudent.gender,
-          profilePic: "/placeholder.svg",
-        });
-      }
-    };
-
-    fetchStudentData();
-  }, []);
-
-
-
-  // Mock emergency contacts
-  const emergencyContacts = [
-    { name: "Hostel Warden", number: "+92 300 1234567" },
-    { name: "Campus Security", number: "+92 300 7654321" },
-    { name: "Medical Emergency", number: "+92 300 1112223" }
-  ]
+    fetchEmergencyContacts()
+  }, [])
 
   const handleCleaningRequest = () => {
     setIsCleaningRequested(true)
-    // Here you would typically send a request to your backend
-    console.log("Cleaning request sent for room", student.roomNo)
-    setTimeout(() => setIsCleaningRequested(false), 5000) // Reset after 5 seconds
+    setTimeout(() => setIsCleaningRequested(false), 5000)
   }
 
   const handleMessOffSubmit = (e) => {
@@ -93,30 +86,27 @@ export default function StudentDashboard() {
     const { leavingDate, arrivalDate } = messOffDates
     const diffTime = Math.abs(new Date(arrivalDate) - new Date(leavingDate))
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
+
     if (diffDays > 14) {
       setMessOffError("Mess can't be off for more than 14 days")
     } else {
       setMessOffError('')
       console.log("Mess off request submitted:", messOffDates)
-      // Here you would send the request to your backend
     }
-  }
-
-  const handleMessOffChange = (e) => {
-    setMessOffDates({ ...messOffDates, [e.target.name]: e.target.value })
   }
 
   const handleProfileUpdate = (e) => {
     e.preventDefault()
-    // Here you would typically send the updated profile data to your backend
     console.log("Profile update submitted:", student)
-    // After successful update, you might want to show a success message or close the dialog
   }
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target
     setStudent(prev => ({ ...prev, [name]: value }))
+  }
+
+  if (!student) {
+    return <p>Loading...</p>
   }
 
   return (
@@ -133,12 +123,6 @@ export default function StudentDashboard() {
               <CardDescription>Room: {student.roomNo} | Hostel: {student.hostel}</CardDescription>
             </div>
             <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">
-                  <UserCircle className="w-4 h-4 mr-2" />
-                  View/Edit Profile
-                </Button>
-              </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
@@ -156,59 +140,6 @@ export default function StudentDashboard() {
                       <Label htmlFor="fathersName">Father&apos;s Name</Label>
                       <Input id="fathersName" name="fathersName" value={student.fathersName} onChange={handleProfileChange} />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" name="email" type="email" value={student.email} onChange={handleProfileChange} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="contactNo">Contact No.</Label>
-                      <Input id="contactNo" name="contactNo" value={student.contactNo} onChange={handleProfileChange} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registrationNo">Registration No.</Label>
-                      <Input id="registrationNo" name="registrationNo" value={student.registrationNo} readOnly />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="school">School</Label>
-                      <Select name="school" value={student.school} onValueChange={(value) => handleProfileChange({ target: { name: 'school', value } })}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select School" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="SEECS">SEECS</SelectItem>
-                          <SelectItem value="NICE">NICE</SelectItem>
-                          <SelectItem value="SMME">SMME</SelectItem>
-                          <SelectItem value="SCME">SCME</SelectItem>
-                          <SelectItem value="IGIS">IGIS</SelectItem>
-                          <SelectItem value="ASAB">ASAB</SelectItem>
-                          <SelectItem value="SNS">SNS</SelectItem>
-                          <SelectItem value="S3H">S3H</SelectItem>
-                          <SelectItem value="SADA">SADA</SelectItem>
-                          <SelectItem value="NBS">NBS</SelectItem>
-                          <SelectItem value="SINES">SINES</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="batch">Batch</Label>
-                      <Input id="batch" name="batch" value={student.batch} onChange={handleProfileChange} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="discipline">Discipline</Label>
-                      <Input id="discipline" name="discipline" value={student.discipline} onChange={handleProfileChange} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="hostel">Hostel</Label>
-                      <Input id="hostel" name="hostel" value={student.hostel} readOnly />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="roomNo">Room No.</Label>
-                      <Input id="roomNo" name="roomNo" value={student.roomNo} readOnly />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="gender">Gender</Label>
-                      <Input id="gender" name="gender" value={student.gender} readOnly />
-                    </div>
                   </div>
                   <Button type="submit" className="w-full">Save Changes</Button>
                 </form>
@@ -217,7 +148,7 @@ export default function StudentDashboard() {
           </CardHeader>
         </Card>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -226,11 +157,7 @@ export default function StudentDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Button 
-                onClick={handleCleaningRequest} 
-                disabled={isCleaningRequested}
-                className="w-full"
-              >
+              <Button onClick={handleCleaningRequest} disabled={isCleaningRequested} className="w-full">
                 {isCleaningRequested ? "Request Sent" : "Request Cleaning"}
               </Button>
             </CardContent>
@@ -240,7 +167,6 @@ export default function StudentDashboard() {
             <ComplaintForm />
           </div>
 
-          
           <Dialog>
             <DialogTrigger asChild>
               <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
@@ -272,20 +198,16 @@ export default function StudentDashboard() {
           </Dialog>
 
           <div className='messform'>
-              <MessForm />
+            <MessForm />
           </div>
 
-          <div className = 'hostelform'>
+          <div className='hostelform'>
             <HostelForm />
           </div>
 
-          <div className = 'vehicleform'>
+          <div className='vehicleform'>
             <VehicleForm />
           </div>
-
-              
-
-
         </div>
 
         <Card>
