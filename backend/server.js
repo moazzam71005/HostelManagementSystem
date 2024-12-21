@@ -12,7 +12,7 @@ import messRequestRoutes from './routing/messRequestsRouting.js';
 import requestRoutes from './routing/requestRouting.js';
 import staffRoutes from './routing/staffRouting.js'; 
 import studentRoutes from './routing/studentRouting.js';
-import userRoutes from './routing/userRouting.js';
+import vehicleRoutes from './routing/vehicleRouting.js';
 
 dotenv.config();
 
@@ -31,7 +31,7 @@ app.use('/api/mess', messRequestRoutes);
 app.use('/api/request', requestRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/student', studentRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/vehicles', vehicleRoutes);
 
 app.get('/', (req, res) => {
     res.send('Backend server for Hostel Management System');

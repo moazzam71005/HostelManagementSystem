@@ -14,6 +14,7 @@ import supabase from "../../../supabaseClient"
 import ComplaintForm from '../ComplaintForm'
 import MessForm from '../MessForm'
 import HostelForm from '../HostelForm'
+import VehicleForm from '../VehicleForm'
 
 export default function StudentDashboard() {
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
@@ -278,70 +279,13 @@ export default function StudentDashboard() {
             <HostelForm />
           </div>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Car className="w-4 h-4" />
-                    Register Vehicle
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Register your vehicle for campus parking</p>
-                </CardContent>
-              </Card>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Register Vehicle</DialogTitle>
-                <DialogDescription>Please provide details about your vehicle</DialogDescription>
-              </DialogHeader>
-              <form className="space-y-4">
-                <div>
-                  <Label htmlFor="vehicleType">Vehicle Type</Label>
-                  <Select>
-                    <SelectTrigger id="vehicleType">
-                      <SelectValue placeholder="Select vehicle type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="car">Car</SelectItem>
-                      <SelectItem value="bike">Bike</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="model">Model</Label>
-                  <Input id="model" placeholder="Vehicle model" required />
-                </div>
-                <div>
-                  <Label htmlFor="name">Vehicle Name</Label>
-                  <Input id="name" placeholder="Vehicle name" required />
-                </div>
-                <div>
-                  <Label htmlFor="registrationNo">Registration No.</Label>
-                  <Input id="registrationNo" placeholder="Vehicle registration number" required />
-                </div>
-                <div>
-                  <Label htmlFor="registrationCity">Registration City</Label>
-                  <Input id="registrationCity" placeholder="City of registration" required />
-                </div>
-                <div>
-                  <Label htmlFor="engineNo">Engine No.</Label>
-                  <Input id="engineNo" placeholder="Engine number" required />
-                </div>
-                <div>
-                  <Label htmlFor="chassisNo">Chassis No.</Label>
-                  <Input id="chassisNo" placeholder="Chassis number" required />
-                </div>
-                <div>
-                  <Label htmlFor="ownerName">Owner Name</Label>
-                  <Input id="ownerName" placeholder="Name of the vehicle owner" required />
-                </div>
-                <Button type="submit">Register Vehicle</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className = 'vehicleform'>
+            <VehicleForm />
+          </div>
+
+              
+
+
         </div>
 
         <Card>
