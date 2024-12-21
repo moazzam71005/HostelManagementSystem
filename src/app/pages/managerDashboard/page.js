@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -18,6 +18,36 @@ import supabase from "../../../supabaseClient"
 
 export default function ManagerDashboard() {
   const router = useRouter();
+
+  const [dialogState, setDialogState] = useState({
+    isOpen: false,
+    action: "",
+    studentId: null,
+    studentName: "",
+  });
+  
+  const handleActionClick = (action, student) => {
+    setDialogState({
+      isOpen: true,
+      action,
+      studentId: student.id,
+      studentName: student.studentName,
+    });
+  };
+  
+  const handleConfirm = async (action, studentId) => {
+    // Add logic to update the database for accept/reject actions
+    if (action === "accept") {
+      console.log(`Accepted student with ID: ${studentId}`);
+      // Add logic to handle acceptance
+    } else {
+      console.log(`Rejected student with ID: ${studentId}`);
+      // Add logic to handle rejection
+    }
+  
+    setDialogState({ isOpen: false, action: "", studentId: null, studentName: "" });
+  };
+  
 
 
   // Mock data - replace with actual data fetching logic
@@ -60,17 +90,117 @@ export default function ManagerDashboard() {
     },
   ])
 
+  useEffect(() => {
+    const fetchedComplaintData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("testcomplaint") // Replace "managers" with your table name
+        .select("*");
+  
+      if (error) {
+        console.error("Error fetching Complaint data:", error.message);
+        setLoading(false);
+        return;
+      }
+  
+      if (data && data.length > 0) {
+        const formattedComplaints = data.map((complaint) => ({
+          id: complaint.cid,
+          title: complaint.complaintTitle,
+          type: complaint.complaintType,
+          description: complaint.details,
+          date: complaint.submitted_at,
+          status: complaint.status || 'Pending', // Use status from the database, default to 'Pending'
+        }));
+        setComplaints(formattedComplaints);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchedComplaintData();
+  }, []); // Empty dependency array means this runs once when the component mounts
+  
+
 
 
   const [messOffRequests, setMessOffRequests] = useState([
-    { id: 1, studentName: 'Alice Johnson', regNo: '2021CS102', roomNo: 'D404', from: '2024-03-10', to: '2024-03-15', status: 'Pending' },
-    { id: 2, studentName: 'Bob Smith', regNo: '2022EE057', roomNo: 'E505', from: '2024-03-12', to: '2024-03-14', status: 'Approved' },
+    { id: 1, studentName: 'Alice Johnson', regNo: '2021CS102', roomNo: 'D404', requestDate: '2024-03-10', from: '2024-03-10', to: '2024-03-15', status: 'Pending' },
+    { id: 2, studentName: 'Bob Smith', regNo: '2022EE057', roomNo: 'E505', requestDate: '2024-03-10', from: '2024-03-12', to: '2024-03-14', status: 'Approved' },
   ])
+  
+  
+  useEffect(() => {
+    const fetchedMessData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("testmess") // Replace "managers" with your table name
+        .select("*");
+  
+      if (error) {
+        console.error("Error fetching Mess data:", error.message);
+        setLoading(false);
+        return;
+      }
+  
+      if (data && data.length > 0) {
+        const formattedMessRequests = data.map((mess) => ({
+          id: mess.id,
+          requestDate: mess.requestDate,
+          from: mess.leavingDate,
+          to: mess.arrivalDate,
+          status: mess.status || 'Pending',
+        }));
+        setMessOffRequests(formattedMessRequests);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchedMessData();
+  }, []);
+  
+
+
+
 
   const [hostelInOut, setHostelInOut] = useState([
-    { id: 1, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', type: 'Out', date: '2024-03-05', reason: 'Weekend trip', placeOfLeave: 'Home' },
-    { id: 2, studentName: 'Diana Prince', regNo: '2021CS103', roomNo: 'G707', type: 'In', date: '2024-03-07', reason: 'Returned from home', placeOfLeave: 'N/A' },
+    { id: 1, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', type: 'Out', leaveDate: '2024-03-05', arrivalDate: '2024-03-07', reason: 'Weekend trip', placeOfLeave: 'Home' },
+    { id: 2, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', type: 'Out', leaveDate: '2024-03-05', arrivalDate: '2024-03-07', reason: 'Weekend trip', placeOfLeave: 'Home' },
+    
   ])
+
+  
+  useEffect(() => {
+    const fetchHostelData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("testhostel") // Replace "managers" with your table name
+        .select("*");
+  
+      if (error) {
+        console.error("Error fetching hostel data:", error.message);
+        setLoading(false);
+        return;
+      }
+  
+      if (data && data.length > 0) {
+        const formattedHostelLogs = data.map((log) => ({
+          id: log.id,
+          leaveDate: log.dateOfLeave,
+          arrivalDate: log.dateOfArrival,
+          placeOfLeave: log.placeOfLeave,
+          reason: log.purpose,
+        }));
+        setHostelInOut(formattedHostelLogs);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchHostelData();
+  }, []);
+  
 
 
   const [pendingStudents, setPendingStudents] = useState([
@@ -84,35 +214,35 @@ export default function ManagerDashboard() {
       const { data, error } = await supabase
         .from("testuser") // Replace "managers" with your table name
         .select("*")
-        .eq("approval_status", "pending"); // Adjust the filter based on your criteria (e.g., ID, role, etc.)
-
+        .eq("approval_status", "pending");
+  
       if (error) {
         console.error("Error fetching student data:", error.message);
         setLoading(false);
         return;
       }
-
+  
       if (data && data.length > 0) {
-        const fetchedStudent = data[0];
-        setPendingStudents([{
-          studentName: fetchedStudent.name,
-          regNo: fetchedStudent.id,
-          contactNum: fetchedStudent.contactno,
-          nustEmail: fetchedStudent.nustemail,
-          school: fetchedStudent.school,
-          department: fetchedStudent.discipline,
-          hostel: fetchedStudent.hostel,
-          roomNo: fetchedStudent.roomno,
-        }]);
+        const formattedStudents = data.map((student) => ({
+          id: student.id,
+          studentName: student.name,
+          regNo: student.id,
+          contactNum: student.contactno,
+          nustEmail: student.nustemail,
+          school: student.school,
+          department: student.discipline,
+          hostel: student.hostel,
+          roomNo: student.roomno,
+        }));
+        setPendingStudents(formattedStudents);
       }
-
+  
       setLoading(false);
     };
-
+  
     fetchStudentData();
-  }, []); // Empty dependency array means this runs once when the component mounts
-
-
+  }, []);
+  
   const [manager, setManager] = useState({
     name: "Jane Doe",
     role: "Hostel Manager",
@@ -154,6 +284,11 @@ export default function ManagerDashboard() {
 
 
   const getStatusBadge = (status) => {
+    if (!status) {
+      console.error("Status is undefined or null:", status);
+      return <Badge>Unknown</Badge>;
+    }
+    
     switch (status.toLowerCase()) {
       case 'pending':
         return <Badge variant="secondary">{status}</Badge>
@@ -173,11 +308,18 @@ export default function ManagerDashboard() {
           <CardHeader className="flex flex-row items-center gap-4">
             <Avatar className="w-20 h-20">
               <AvatarImage src={manager.profilePic} alt={manager.name} />
-              <AvatarFallback>{manager.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              <AvatarFallback>
+                {manager.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
             </Avatar>
             <div>
               <CardTitle>{manager.name}</CardTitle>
-              <CardDescription>{manager.role} | {manager.hostel} Hostel</CardDescription>
+              <CardDescription>
+                {manager.role} | {manager.hostel} Hostel
+              </CardDescription>
             </div>
           </CardHeader>
         </Card>
@@ -187,9 +329,9 @@ export default function ManagerDashboard() {
             <TabsTrigger value="complaints">Complaints</TabsTrigger>
             <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
             <TabsTrigger value="inout">Hostel In/Out</TabsTrigger>
-            <TabsTrigger value = "awaitingStudents">Pending Students</TabsTrigger>
+            <TabsTrigger value="awaitingStudents">Pending Students</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="complaints">
             <Card>
               <CardHeader>
@@ -222,11 +364,15 @@ export default function ManagerDashboard() {
                           <TableCell>{complaint.roomNo}</TableCell>
                           <TableCell>{complaint.complaintType}</TableCell>
                           <TableCell>{complaint.date}</TableCell>
-                          <TableCell>{getStatusBadge(complaint.status)}</TableCell>
+                          <TableCell>
+                            {getStatusBadge(complaint.status)}
+                          </TableCell>
                           <TableCell>
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="outline" size="sm">View Details</Button>
+                                <Button variant="outline" size="sm">
+                                  View Details
+                                </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-3xl">
                                 <DialogHeader>
@@ -234,20 +380,44 @@ export default function ManagerDashboard() {
                                 </DialogHeader>
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
-                                    <p><strong>Title:</strong> {complaint.title}</p>
-                                    <p><strong>Student Name:</strong> {complaint.studentName}</p>
-                                    <p><strong>Registration No.:</strong> {complaint.regNo}</p>
-                                    <p><strong>Room No.:</strong> {complaint.roomNo}</p>
-                                    <p><strong>Complaint Type:</strong> {complaint.complaintType}</p>
+                                    <p>
+                                      <strong>Title:</strong> {complaint.title}
+                                    </p>
+                                    <p>
+                                      <strong>Student Name:</strong>{" "}
+                                      {complaint.studentName}
+                                    </p>
+                                    <p>
+                                      <strong>Registration No.:</strong>{" "}
+                                      {complaint.regNo}
+                                    </p>
+                                    <p>
+                                      <strong>Room No.:</strong>{" "}
+                                      {complaint.roomNo}
+                                    </p>
+                                    <p>
+                                      <strong>Complaint Type:</strong>{" "}
+                                      {complaint.complaintType}
+                                    </p>
                                   </div>
                                   <div>
-                                    <p><strong>Date:</strong> {complaint.date}</p>
-                                    <p><strong>Status:</strong> {complaint.status}</p>
-                                    <p><strong>Description:</strong> {complaint.description}</p>
+                                    <p>
+                                      <strong>Date:</strong> {complaint.date}
+                                    </p>
+                                    <p>
+                                      <strong>Status:</strong>{" "}
+                                      {complaint.status}
+                                    </p>
+                                    <p>
+                                      <strong>Description:</strong>{" "}
+                                      {complaint.description}
+                                    </p>
                                   </div>
                                 </div>
                                 <div className="flex justify-end space-x-2 mt-4">
-                                  <Button size="sm" variant="outline">Update Status</Button>
+                                  <Button size="sm" variant="outline">
+                                    Update Status
+                                  </Button>
                                   <Button size="sm">Resolve</Button>
                                 </div>
                               </DialogContent>
@@ -291,7 +461,9 @@ export default function ManagerDashboard() {
                           <TableCell>{request.roomNo}</TableCell>
                           <TableCell>{request.from}</TableCell>
                           <TableCell>{request.to}</TableCell>
-                          <TableCell>{getStatusBadge(request.status)}</TableCell>
+                          <TableCell>
+                            {getStatusBadge(request.status)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -300,7 +472,6 @@ export default function ManagerDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-
           <TabsContent value="inout">
             <Card>
               <CardHeader>
@@ -341,16 +512,19 @@ export default function ManagerDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="awaitingStudents">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <LogOut className="w-5 h-5" />
-                  Pending Students
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LogOut className="w-5 h-5" />
+                Pending Students
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {pendingStudents.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No pending students at this time.
+                </p>
+              ) : (
                 <ScrollArea className="h-[400px] w-full">
                   <Table>
                     <TableHeader>
@@ -363,6 +537,7 @@ export default function ManagerDashboard() {
                         <TableHead>NUST Email</TableHead>
                         <TableHead>Department</TableHead>
                         <TableHead>School</TableHead>
+                        <TableHead>Actions</TableHead> {/* Add actions column */}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -376,17 +551,64 @@ export default function ManagerDashboard() {
                           <TableCell>{record.nustEmail}</TableCell>
                           <TableCell>{record.department}</TableCell>
                           <TableCell>{record.school}</TableCell>
+                          <TableCell>
+                            {/* Accept and Reject buttons */}
+                            <Button
+                              className="mr-2 bg-green-100 text-black hover:bg-green-500"
+                              onClick={() => {
+                                console.log("Stay humble, Eh");
+                                handleActionClick("accept", record)}}
+                            >
+                              Accept
+                            </Button>
+                            <Button
+                              className="bg-red-100 text-black hover:bg-red-500"
+                              onClick={() => handleActionClick("reject", record)}
+                            >
+                              Reject
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
+              )}
+            </CardContent>
+          </Card>
+          {/* Confirmation Dialog */}
+          {dialogState.isOpen && (
+            <Dialog>
+              <DialogHeader>
+                <DialogTitle>
+                  Confirm{" "}
+                  {dialogState.action === "accept" ? "Acceptance" : "Rejection"}
+                </DialogTitle>
+              </DialogHeader>
+              <DialogContent>
+                <DialogDescription>
+                  Are you sure you want to {dialogState.action} this student?
+                </DialogDescription>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    onClick={() =>
+                      handleConfirm(dialogState.action, dialogState.studentId)
+                    }
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      setDialogState({ ...dialogState, isOpen: false })
+                    }
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </Tabs>
-
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -395,11 +617,13 @@ export default function ManagerDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">No new announcements at this time.</p>
+            <p className="text-sm text-muted-foreground">
+              No new announcements at this time.
+            </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
