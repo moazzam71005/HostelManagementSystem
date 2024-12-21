@@ -1,3 +1,4 @@
+
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -59,6 +60,8 @@ export default function ManagerDashboard() {
     },
   ])
 
+
+
   const [messOffRequests, setMessOffRequests] = useState([
     { id: 1, studentName: 'Alice Johnson', regNo: '2021CS102', roomNo: 'D404', from: '2024-03-10', to: '2024-03-15', status: 'Pending' },
     { id: 2, studentName: 'Bob Smith', regNo: '2022EE057', roomNo: 'E505', from: '2024-03-12', to: '2024-03-14', status: 'Approved' },
@@ -69,6 +72,45 @@ export default function ManagerDashboard() {
     { id: 2, studentName: 'Diana Prince', regNo: '2021CS103', roomNo: 'G707', type: 'In', date: '2024-03-07', reason: 'Returned from home', placeOfLeave: 'N/A' },
   ])
 
+
+  const [pendingStudents, setPendingStudents] = useState([
+    {id: 1, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', hostel: 'xyz', contactNum: '012', nustEmail: 'a@', school: 'xyz', department: 'xyz'},
+    {id: 2, studentName: 'Charlie Brown', regNo: '2020ME078', roomNo: 'F606', hostel: 'xyz', contactNum: '012', nustEmail: 'a@', school: 'xyz', department: 'xyz'}
+  ])
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("testuser") // Replace "managers" with your table name
+        .select("*")
+        .eq("approval_status", "pending"); // Adjust the filter based on your criteria (e.g., ID, role, etc.)
+
+      if (error) {
+        console.error("Error fetching student data:", error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const fetchedStudent = data[0];
+        setPendingStudents([{
+          studentName: fetchedStudent.name,
+          regNo: fetchedStudent.id,
+          contactNum: fetchedStudent.contactno,
+          nustEmail: fetchedStudent.nustemail,
+          school: fetchedStudent.school,
+          department: fetchedStudent.discipline,
+          hostel: fetchedStudent.hostel,
+          roomNo: fetchedStudent.roomno,
+        }]);
+      }
+
+      setLoading(false);
+    };
+
+    fetchStudentData();
+  }, []); // Empty dependency array means this runs once when the component mounts
 
 
   const [manager, setManager] = useState({
@@ -145,6 +187,7 @@ export default function ManagerDashboard() {
             <TabsTrigger value="complaints">Complaints</TabsTrigger>
             <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
             <TabsTrigger value="inout">Hostel In/Out</TabsTrigger>
+            <TabsTrigger value = "awaitingStudents">Pending Students</TabsTrigger>
           </TabsList>
           
           <TabsContent value="complaints">
@@ -298,6 +341,50 @@ export default function ManagerDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="awaitingStudents">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <LogOut className="w-5 h-5" />
+                  Pending Students
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px] w-full">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student Name</TableHead>
+                        <TableHead>Reg. No.</TableHead>
+                        <TableHead>Hostel</TableHead>
+                        <TableHead>Room No.</TableHead>
+                        <TableHead>Contact No.</TableHead>
+                        <TableHead>NUST Email</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>School</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingStudents.map((record) => (
+                        <TableRow key={record.id}>
+                          <TableCell>{record.studentName}</TableCell>
+                          <TableCell>{record.regNo}</TableCell>
+                          <TableCell>{record.hostel}</TableCell>
+                          <TableCell>{record.roomNo}</TableCell>
+                          <TableCell>{record.contactNum}</TableCell>
+                          <TableCell>{record.nustEmail}</TableCell>
+                          <TableCell>{record.department}</TableCell>
+                          <TableCell>{record.school}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
 
         <Card>
@@ -315,3 +402,4 @@ export default function ManagerDashboard() {
     </div>
   )
 }
+
