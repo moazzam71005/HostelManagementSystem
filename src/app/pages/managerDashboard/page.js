@@ -117,7 +117,7 @@ export default function ManagerDashboard() {
           studentName: complaint.testuser?.name,
           regNo: complaint.cid,
           roomNo: complaint.testuser?.roomno,
-          type: complaint.testcomplaint?.complaintType,
+          type: complaint.complaintType,
           date: complaint.submitted_at,
           description: complaint.details,
           status: complaint.status || 'Pending', // Use status from the database, default to 'Pending'
@@ -145,7 +145,7 @@ export default function ManagerDashboard() {
       setLoading(true);
       const { data, error } = await supabase
         .from("testmess") // Replace "managers" with your table name
-        .select("*");
+        .select("id, requestDate, leavingDate, arrivalDate, testuser(name, roomno)");
   
       if (error) {
         console.error("Error fetching Mess data:", error.message);
@@ -160,6 +160,9 @@ export default function ManagerDashboard() {
           from: mess.leavingDate,
           to: mess.arrivalDate,
           status: mess.status || 'Pending',
+          studentName: mess.testuser?.name,
+          roomNo: mess.testuser?.roomno,
+          regNo: mess.id
         }));
         setMessOffRequests(formattedMessRequests);
       }
@@ -186,7 +189,7 @@ export default function ManagerDashboard() {
       setLoading(true);
       const { data, error } = await supabase
         .from("testhostel") // Replace "managers" with your table name
-        .select("*");
+        .select("id, dateOfLeave, dateOfArrival, placeOfLeave, purpose, testuser(name, roomno)");
   
       if (error) {
         console.error("Error fetching hostel data:", error.message);
@@ -201,6 +204,9 @@ export default function ManagerDashboard() {
           arrivalDate: log.dateOfArrival,
           placeOfLeave: log.placeOfLeave,
           reason: log.purpose,
+          studentName: log.testuser?.name,
+          roomNo: log.testuser?.roomno,
+          regNo: log.id
         }));
         setHostelInOut(formattedHostelLogs);
       }
@@ -371,7 +377,7 @@ export default function ManagerDashboard() {
                           <TableCell>{complaint.studentName}</TableCell>
                           <TableCell>{complaint.regNo}</TableCell>
                           <TableCell>{complaint.roomNo}</TableCell>
-                          <TableCell>{complaint.complaintType}</TableCell>
+                          <TableCell>{complaint.type}</TableCell>
                           <TableCell>{complaint.date}</TableCell>
                           <TableCell>
                             {getStatusBadge(complaint.status)}

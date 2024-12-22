@@ -21,28 +21,11 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-/*const corsOptions = {
-    origin: 'http://localhost:3000', // Replace with your frontend's URL
-    credentials: true,  // Allow credentials (cookies)
-  };
-  
-  app.use(cors(corsOptions));
+
 app.use(express.json());
-*/
+app.use(cors());
 //const memoryStore = new session.MemoryStore();
 
-
-
-// Set up session middleware
-app.use(session({
-    secret: 'your-secret-key', // Secret key to sign the session ID cookie
-    resave: false,             // Don't save session if not modified
-    saveUninitialized: true,   // Save session even if it's not modified
-    cookie: {
-        secure: false,  // Use 'false' for development (when not using HTTPS)
-        maxAge: 3600000 // Session expires in 1 hour
-    }
-})); 
 
 
 
