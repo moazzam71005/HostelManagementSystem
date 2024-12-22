@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
     console.log('Received form data:', formData);
 
     const processedData = {
+        id: parseInt(formData.id, 10),
         purpose: formData.purpose,
         placeOfLeave: formData.placeOfLeave,
         dateOfLeave: new Date(formData.dateOfLeave).toISOString().split("T")[0],

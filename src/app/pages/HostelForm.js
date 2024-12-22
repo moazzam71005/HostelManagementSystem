@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -30,12 +31,17 @@ const HostelForm = () => {
   const [toastMessage, setToastMessage] = useState(""); // Toast message
   const [isToastVisible, setIsToastVisible] = useState(false); // Toast visibility
 
+  const searchParams = useSearchParams()
+  const studentId = searchParams.get('id')
+
   // Handle form field changes
   const handleInputChange = (e) => {
+    const studentId = localStorage.getItem('studentId');
     const { name, value } = e.target;
     setHostelData((prevData) => ({
       ...prevData,
       [name]: value,
+      id: studentId
     }));
   };
 

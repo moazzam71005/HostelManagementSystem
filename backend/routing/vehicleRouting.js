@@ -9,7 +9,7 @@ const validateData = (processedData) => {
     const errors = [];
 
     const idPattern = /^[0-9]+$/;
-    if (!idPattern.test(processedData.regNum) || !idPattern.test(processedData.engineNum) || !idPattern.test(processedData.chassisNum) || !idPattern.test(processedData.cms) ) {
+    if (!idPattern.test(processedData.regNum) || !idPattern.test(processedData.engineNum) || !idPattern.test(processedData.chassisNum) || !idPattern.test(processedData.id) ) {
         errors.push("Invalid Entry.");
     }
 
@@ -23,6 +23,7 @@ router.post('/', async (req, res) => {
     console.log('Received form data:', formData);
 
     const processedData = {
+        id: parseInt(formData.id, 10),
         regNum: parseInt(formData.registrationNo,10),
         vehicleType: formData.vehicleType,
         model: formData.model,
@@ -30,7 +31,7 @@ router.post('/', async (req, res) => {
         engineNum: parseInt(formData.engineNo,10),
         chassisNum: parseInt(formData.chassisNo,10),
         ownerName: formData.ownerName,
-        cms: parseInt(formData.cmsId,10)
+        
     }
 
     // Run validation

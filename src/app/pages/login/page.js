@@ -9,11 +9,14 @@ import { useRouter } from 'next/navigation';
 import supabase from '../../../supabaseClient';
 import bcrypt from 'bcryptjs';
 
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +39,33 @@ export default function LoginPage() {
       return;
     }
 
+
     if (data.approval_status === "approved") {
-      console.log('Login successful, navigating to dashboard...');
-      router.push(`/pages/studentDashboard?id=${data.id}`);  // Ensure correct routing
+      localStorage.setItem('studentId', data.id);
+      const response = await fetch("http://localhost:5000/api/submitStudentId", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentId: data.id }),
+      });
+  
+      if (response.ok) {
+        // Handle success, navigate to student dashboard
+        console.log('Student ID sent to backend', data.id);
+        router.push(`/pages/studentDashboard?id=${data.id}`);
+      } else {
+        // Handle error
+        console.error('Failed to send student ID to backend');
+      }
     } else {
       setError("Your account is not yet approved.");
     }
+
   };
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

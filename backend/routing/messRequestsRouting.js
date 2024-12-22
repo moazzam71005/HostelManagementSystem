@@ -9,6 +9,7 @@ router.post('/', async (req, res) => {
 
     // Convert the string dates into proper date format (YYYY-MM-DD)
     const processedData = {
+        id: parseInt(formData.studentId, 10),
         requestDate: new Date(formData.requestDate).toISOString().split("T")[0],
         leavingDate: new Date(formData.leavingDate).toISOString().split("T")[0],
         arrivalDate: new Date(formData.arrivalDate).toISOString().split("T")[0],

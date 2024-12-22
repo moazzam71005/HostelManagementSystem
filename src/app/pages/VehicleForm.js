@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/select";
 
 const VehicleForm = () => {
+  const id = localStorage.getItem('studentId');
   const [vehicleData, setVehicleData] = useState({
     vehicleType: "",
     model: "",
@@ -33,7 +35,6 @@ const VehicleForm = () => {
     engineNo: "",
     chassisNo: "",
     ownerName: "",
-    cmsId: "",
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog open state
   const [isSubmitting, setIsSubmitting] = useState(false); // Handle submitting state
@@ -41,12 +42,14 @@ const VehicleForm = () => {
   const [toastMessage, setToastMessage] = useState(""); // Toast message
   const [isToastVisible, setIsToastVisible] = useState(false); // Toast visibility
 
+
   // Handle form field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setVehicleData((prevData) => ({
       ...prevData,
       [name]: value,
+      id
     }));
   };
 
@@ -213,18 +216,6 @@ const VehicleForm = () => {
                 placeholder="Name of the vehicle owner"
                 required
                 value={vehicleData.ownerName}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="registrationCity">CMS ID</Label>
-              <Input
-                id="cmsId"
-                name="cmsId"
-                placeholder="CMS ID"
-                required
-                value={vehicleData.cmsId}
                 onChange={handleInputChange}
               />
             </div>

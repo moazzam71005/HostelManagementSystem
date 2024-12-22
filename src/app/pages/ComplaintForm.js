@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/select";
 import { MessageSquare } from "lucide-react";
 
+
+
 const ComplaintForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
   const [isSubmitting, setIsSubmitting] = useState(false); // Handle submitting state
@@ -35,9 +37,12 @@ const ComplaintForm = () => {
   const [isToastVisible, setIsToastVisible] = useState(false); // Control toast visibility
 
   const handleSubmit = async (e) => {
+    const studentId = localStorage.getItem('studentId');
+    console.log(studentId);
     e.preventDefault();
     const formData = new FormData(e.target);
     const complaintData = {
+      cid: studentId,
       title: formData.get("complaint-title"),
       type: formData.get("complaint-type"),
       details: formData.get("complaint-details"),
@@ -47,12 +52,16 @@ const ComplaintForm = () => {
     setSubmitMessage(""); // Reset any previous message
 
     try {
+      
+
       const response = await fetch("http://localhost:5000/api/complaint", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+      
         body: JSON.stringify(complaintData),
+        credentials: 'include'
       });
 
       const result = await response.json();

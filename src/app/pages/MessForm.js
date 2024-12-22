@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -29,6 +30,9 @@ const MessOffForm = () => {
   const [toastMessage, setToastMessage] = useState(""); // Toast message
   const [isToastVisible, setIsToastVisible] = useState(false); // Toast visibility
 
+  const searchParams = useSearchParams()
+  const studentId = searchParams.get('id')
+
   // Handle form field changes
   const handleMessOffChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +44,7 @@ const MessOffForm = () => {
 
   // Handle form submission
   const handleMessOffSubmit = async (e) => {
+    const studentId = localStorage.getItem('studentId');
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -53,6 +58,7 @@ const MessOffForm = () => {
       requestDate,
       leavingDate,
       arrivalDate,
+      studentId
     };
 
     setIsSubmitting(true);
