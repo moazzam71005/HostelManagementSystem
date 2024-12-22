@@ -24,7 +24,14 @@ export default function StudentDashboard() {
   const [student, setStudent] = useState(null)
   const [messOffDates, setMessOffDates] = useState({ requestDate: '', leavingDate: '', arrivalDate: '' })
   const [messOffError, setMessOffError] = useState('')
-  const [emergencyContacts, setEmergencyContacts] = useState([])
+
+
+  const emergencyContacts = [
+    { name: "Hostel Warden", number: "+92 300 1234567" },
+    { name: "Campus Security", number: "+92 300 7654321" },
+    { name: "Medical Emergency", number: "+92 300 1112223" }
+  ]
+
 
   // Fetch student data based on the provided ID
   useEffect(() => {
@@ -60,21 +67,7 @@ export default function StudentDashboard() {
     }
   }, [studentId])
 
-  useEffect(() => {
-    const fetchEmergencyContacts = async () => {
-      const { data, error } = await supabase
-        .from('emergency_contacts')
-        .select('*')
-
-      if (error) {
-        console.error("Error fetching emergency contacts:", error.message)
-      } else {
-        setEmergencyContacts(data)
-      }
-    }
-
-    fetchEmergencyContacts()
-  }, [])
+  
 
   const handleCleaningRequest = () => {
     setIsCleaningRequested(true)
