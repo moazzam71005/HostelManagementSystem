@@ -91,25 +91,35 @@ export default function ManagerDashboard() {
   ])
 
   useEffect(() => {
+    console.log("Hello bruv");
     const fetchedComplaintData = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from("testcomplaint") // Replace "managers" with your table name
-        .select("*");
+        .from("testcomplaint") 
+        .select("cid, complaintTitle, complaintType, details, submitted_at, testuser(name, roomno)");
   
       if (error) {
         console.error("Error fetching Complaint data:", error.message);
         setLoading(false);
         return;
       }
-  
+
+      console.log('id is ', data[0].cid);
+      console.log('name is ', data[0].testuser?.name);
+      console.log('title is ', data[0].complaintTitle);
+      console.log('type is ', data[0].complaintType);
+
       if (data && data.length > 0) {
+        
         const formattedComplaints = data.map((complaint) => ({
           id: complaint.cid,
           title: complaint.complaintTitle,
-          type: complaint.complaintType,
-          description: complaint.details,
+          studentName: complaint.testuser?.name,
+          regNo: complaint.cid,
+          roomNo: complaint.testuser?.roomno,
+          type: complaint.testcomplaint?.complaintType,
           date: complaint.submitted_at,
+          description: complaint.details,
           status: complaint.status || 'Pending', // Use status from the database, default to 'Pending'
         }));
         setComplaints(formattedComplaints);
@@ -331,7 +341,6 @@ export default function ManagerDashboard() {
             <TabsTrigger value="inout">Hostel In/Out</TabsTrigger>
             <TabsTrigger value="awaitingStudents">Pending Students</TabsTrigger>
           </TabsList>
-
           <TabsContent value="complaints">
             <Card>
               <CardHeader>
@@ -431,7 +440,6 @@ export default function ManagerDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-
           <TabsContent value="messoff">
             <Card>
               <CardHeader>

@@ -42,22 +42,8 @@ export default function LoginPage() {
 
     if (data.approval_status === "approved") {
       localStorage.setItem('studentId', data.id);
-      const response = await fetch("http://localhost:5000/api/submitStudentId", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ studentId: data.id }),
-      });
+      router.push(`/pages/studentDashboard?id=${data.id}`);
   
-      if (response.ok) {
-        // Handle success, navigate to student dashboard
-        console.log('Student ID sent to backend', data.id);
-        router.push(`/pages/studentDashboard?id=${data.id}`);
-      } else {
-        // Handle error
-        console.error('Failed to send student ID to backend');
-      }
     } else {
       setError("Your account is not yet approved.");
     }
@@ -77,7 +63,6 @@ export default function LoginPage() {
           Sign in to your account
         </h3>
       </div>
-
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -95,7 +80,6 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-
             <div>
               <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
@@ -110,9 +94,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-
             {error && <p className="text-red-500">{error}</p>}
-
             <Button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md py-2"
@@ -120,13 +102,11 @@ export default function LoginPage() {
               Sign in
             </Button>
           </form>
-
           <div className="mt-6 text-center">
             <Link href="/pages/register" className="text-indigo-600 hover:text-indigo-500">
               Create new account
             </Link>
           </div>
-
           <div className='space-y-[1vh]'>
               <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to student Dashboard');
             router.push("/pages/studentDashboard")}}>
