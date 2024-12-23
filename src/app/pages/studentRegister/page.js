@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '../../components/ui/button';
 import { Input } from "../../components/ui/input";
@@ -8,6 +9,7 @@ import { Label } from '../../components/ui/label';
 import { UserCircle } from 'lucide-react';
 
 export default function StudentRegistration() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     registrationNo: '',
     name: '',
@@ -63,6 +65,8 @@ export default function StudentRegistration() {
       if (response.ok) {
         console.log('3');
         alert(result.message); // Show success message
+        router.push(`/pages/login?id=${''}`);
+
       } else {
         console.log('4');
         console.error(result.error); // Log the error
@@ -178,8 +182,6 @@ export default function StudentRegistration() {
                 </button>
               </div>
             </div>
-
-
               <div>
                 <Label htmlFor="contactNo">Contact No.</Label>
                 <Input id="contactNo" name="contactNo" type="tel" required value={formData.contactNo} onChange={handleInputChange} />

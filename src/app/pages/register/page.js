@@ -40,18 +40,7 @@ export default function RegisterAccount() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Manager/Caretaker</CardTitle>
-                <CardDescription>Register as a hostel manager or caretaker</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" onClick={() => {console.log('Navigate to manager registration');
-            router.push("/pages/managerRegister")}}>
-                  Register as Manager/Caretaker
-                </Button>
-              </CardContent>
-            </Card>
+            
 
             <div className="text-sm text-center">
               <Link href="/pages/login" className="font-medium text-indigo-600 hover:text-indigo-500">
