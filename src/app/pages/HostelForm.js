@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from 'next/navigation'
+import {House} from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -102,7 +103,7 @@ const HostelForm = () => {
           <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">\ud83c\udfe0</span> {/* Example icon */}
+                <House className="w-4 h-6" />
                 Hostel In/Out
               </CardTitle>
             </CardHeader>

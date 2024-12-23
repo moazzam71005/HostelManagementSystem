@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from 'next/navigation'
+import { Car, CarFrontIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -117,13 +117,13 @@ const VehicleForm = () => {
           <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">\ud83d\ude97</span> {/* Example icon */}
+                <CarFrontIcon className="w-4 h-6" />
                 Register Vehicle
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Register your vehicle for campus parking
+                Register your vehicle
               </p>
             </CardContent>
           </Card>

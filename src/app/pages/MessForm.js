@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Utensils } from "lucide-react";
 
 const MessOffForm = () => {
   const [messOffDates, setMessOffDates] = useState({
@@ -142,7 +143,7 @@ const MessOffForm = () => {
           <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">🍽</span> {/* Example icon */}
+                <Utensils className="w-4 h-6" />
                 Mess Off
               </CardTitle>
             </CardHeader>

@@ -107,7 +107,7 @@ const ComplaintForm = () => {
           >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
+                <MessageSquare className="w-4 h-8" />
                 Register Complaint
               </CardTitle>
             </CardHeader>

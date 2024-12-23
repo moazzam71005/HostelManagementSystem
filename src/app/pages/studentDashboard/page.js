@@ -160,7 +160,7 @@ export default function StudentDashboard() {
               <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-4 h-6" />
                     Emergency Contacts
                   </CardTitle>
                 </CardHeader>

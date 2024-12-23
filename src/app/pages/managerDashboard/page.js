@@ -34,12 +34,56 @@ export default function ManagerDashboard() {
   const [pendingStudents, setPendingStudents] = useState([]);
   const [cleaningRequests, setCleaningRequests] = useState([]);
   const [manager, setManager] = useState({
-    name: "Jane Doe",
-    role: "Hostel Manager",
-    hostel: "Beruni",
+    name: "",
+    role: "",
+    hostel: "",
     profilePic: "/placeholder.svg",
   });
   const [loading, setLoading] = useState(true);
+
+  
+  useEffect(() => {
+    const fetchManagerData = async () => {
+      const id = searchParams.get("id");
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("testuser")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching manager data:", error.message);
+          return;
+        }
+
+        if (data) {
+          setManager({
+            name: data.name,
+            role: data.role,
+            hostel: data.hostel,
+            profilePic: data.profilePic || "/placeholder.svg",
+          });
+        }
+      } catch (fetchError) {
+        console.error("Unexpected error fetching manager data:", fetchError);
+      }
+    };
+
+    fetchManagerData();
+  }, [searchParams]);
+
+  useEffect(() => {
+    fetchData(); // Initial data fetch on mount
+
+    const intervalId = setInterval(fetchData, 10000); // Refresh every 10 seconds
+    
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
 
   const handleActionClick = async (action, student) => {
     try {
@@ -204,48 +248,6 @@ export default function ManagerDashboard() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const fetchManagerData = async () => {
-      const id = searchParams.get("id");
-      if (!id) return;
-
-      try {
-        const { data, error } = await supabase
-          .from("testuser")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching manager data:", error.message);
-          return;
-        }
-
-        if (data) {
-          setManager({
-            name: data.name,
-            role: data.role,
-            hostel: data.hostel,
-            profilePic: data.profilePic || "/placeholder.svg",
-          });
-        }
-      } catch (fetchError) {
-        console.error("Unexpected error fetching manager data:", fetchError);
-      }
-    };
-
-    fetchManagerData();
-  }, [searchParams]);
-
-  useEffect(() => {
-    fetchData(); // Initial data fetch on mount
-
-    const intervalId = setInterval(fetchData, 10000); // Refresh every 10 seconds
-    
-
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
