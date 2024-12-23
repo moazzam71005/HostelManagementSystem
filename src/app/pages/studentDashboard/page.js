@@ -65,9 +65,33 @@ export default function StudentDashboard() {
     }
   }, [studentId])
 
-  const handleCleaningRequest = () => {
+  const handleCleaningRequest = async (e) => {
+    e.preventDefault();
+
     setIsCleaningRequested(true)
-    setTimeout(() => setIsCleaningRequested(false), 5000)
+    setTimeout(() => setIsCleaningRequested(false), 30000)
+
+    try {
+      const response = await fetch("http://localhost:5000/api/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({studentId}),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log("Successsss");
+     
+      } else {
+        console.log("nahsps");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    } 
+
   }
 
   const handleLogout = async () => {

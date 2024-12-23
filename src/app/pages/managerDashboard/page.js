@@ -28,9 +28,11 @@ export default function ManagerDashboard() {
   });
 
   const [complaints, setComplaints] = useState([]);
+  const [vehicleRegister, setVehicles] = useState([]);
   const [messOffRequests, setMessOffRequests] = useState([]);
   const [hostelInOut, setHostelInOut] = useState([]);
   const [pendingStudents, setPendingStudents] = useState([]);
+  const [cleaningRequests, setCleaningRequests] = useState([]);
   const [manager, setManager] = useState({
     name: "Jane Doe",
     role: "Hostel Manager",
@@ -83,30 +85,41 @@ export default function ManagerDashboard() {
     setLoading(true);
 
     try {
-      const [complaintRes, messRes, hostelRes, studentRes] = await Promise.all([
+      const [complaintRes, messRes, hostelRes, vehicleRes, cleaningRes, studentRes] = await Promise.all([
         supabase
           .from("testcomplaint")
-          .select("cid, complaintTitle, complaintType, details, submitted_at, testuser(name, roomno)"),
-          //.eq("testuser.hostel", manager.hostel),
+          .select("cid, complaintTitle, complaintType, details, submitted_at, testuser!inner(name, roomno)")
+          .eq("testuser.hostel", manager.hostel),
         supabase
           .from("testmess")
-          .select("id, requestDate, leavingDate, arrivalDate, testuser(name, roomno)"),
-          //.eq("testuser.hostel",manager.hostel),
+          .select("id, requestDate, leavingDate, arrivalDate, testuser!inner(name, roomno)")
+          .eq("testuser.hostel",manager.hostel),
         supabase
           .from("testhostel")
-          .select("id, dateOfLeave, dateOfArrival, placeOfLeave, purpose, testuser(name, roomno)"),
-          //.eq("testuser.hostel", manager.hostel),
+          .select("id, dateOfLeave, dateOfArrival, placeOfLeave, purpose, testuser!inner(name, roomno)")
+          .eq("testuser.hostel", manager.hostel),
+        supabase
+          .from("testvehicles")
+          .select("id, vehicleType, model, engineNum, chassisNum, vehicleName, ownerName, status, testuser!inner(name, roomno)")
+          .eq("testuser.hostel", manager.hostel)
+          .eq("status", "pending"),
+        supabase
+          .from("cleaning")
+          .select("id, time, testuser!inner(name, roomno)")
+          .eq("testuser.hostel", manager.hostel),
         supabase
           .from("testuser")
           .select("*")
           .eq("approval_status", "pending")
-          //.eq("hostel", manager.hostel),
+          .eq("hostel", manager.hostel),
       ]);
 
       if (complaintRes.error) throw complaintRes.error;
       if (messRes.error) throw messRes.error;
       if (hostelRes.error) throw hostelRes.error;
       if (studentRes.error) throw studentRes.error;
+      if (vehicleRes.error) throw vehicleRes.error;
+      if (cleaningRes.error) throw cleaningRes.error;
 
       setComplaints(
         complaintRes.data.map((c) => ({
@@ -145,6 +158,30 @@ export default function ManagerDashboard() {
           studentName: h.testuser?.name,
           roomNo: h.testuser?.roomno,
           regNo: h.id,
+        }))
+      );
+
+      setVehicles(
+        vehicleRes.data.map((v) => ({
+          id: v.id,
+          type: v.vehicleType,
+          model: v.model,
+          vehicleName: v.vehicleName,
+          engineNum: v.engineNum,
+          chassisNum: v.chassisNum,
+          ownerName: v.ownerName,
+          studentName: v.testuser?.name,
+          roomNo: v.testuser?.roomno,
+          status: v.status
+        }))
+      );
+
+      setCleaningRequests(
+        cleaningRes.data.map((r) => ({
+          id: r.id,
+          time: r.time,
+          studentName: r.testuser?.name,
+          roomNo: r.testuser?.roomno,
         }))
       );
 
@@ -205,6 +242,7 @@ export default function ManagerDashboard() {
     fetchData(); // Initial data fetch on mount
 
     const intervalId = setInterval(fetchData, 10000); // Refresh every 10 seconds
+    
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
@@ -249,6 +287,8 @@ export default function ManagerDashboard() {
             <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
             <TabsTrigger value="inout">Hostel In/Out</TabsTrigger>
             <TabsTrigger value="awaitingStudents">Pending Students</TabsTrigger>
+            <TabsTrigger value="vehicleregister">Vehicle Registration</TabsTrigger>
+            <TabsTrigger value="cleaningrequests">Cleaning Requests</TabsTrigger>
           </TabsList>
           <TabsContent value="complaints">
             <Card>
@@ -429,6 +469,91 @@ export default function ManagerDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="vehicleregister">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UtensilsCrossed className="w-5 h-5" />
+                  Vehicle Registration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px] w-full">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student Name</TableHead>
+                        <TableHead>Reg. No.</TableHead>
+                        <TableHead>Room No.</TableHead>
+                        <TableHead>Vehicle Type</TableHead>
+                        <TableHead>Model</TableHead>
+                        <TableHead>Vehicle Name</TableHead>
+                        <TableHead>Engine No.</TableHead>
+                        <TableHead>Chassis No.</TableHead>
+                        <TableHead>Owner Name</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vehicleRegister.map((vehicle) => (
+                        <TableRow key={vehicle.id}>
+                          <TableCell>{vehicle.studentName}</TableCell>
+                          <TableCell>{vehicle.id}</TableCell>
+                          <TableCell>{vehicle.roomNo}</TableCell>
+                          <TableCell>{vehicle.type}</TableCell>
+                          <TableCell>{vehicle.model}</TableCell>
+                          <TableCell>{vehicle.vehicleName}</TableCell>
+                          <TableCell>{vehicle.engineNum}</TableCell>
+                          <TableCell>{vehicle.chassisNum}</TableCell>
+                          <TableCell>{vehicle.ownerName}</TableCell>
+                          <TableCell>
+                            {getStatusBadge(vehicle.status)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="cleaningrequests">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UtensilsCrossed className="w-5 h-5" />
+                  Cleaning Requests
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px] w-full">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student Name</TableHead>
+                        <TableHead>Reg. No.</TableHead>
+                        <TableHead>Room No.</TableHead>
+                        <TableHead>Time</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cleaningRequests.map((clean) => (
+                        <TableRow key={clean.id}>
+                          <TableCell>{clean.studentName}</TableCell>
+                          <TableCell>{clean.id}</TableCell>
+                          <TableCell>{clean.roomNo}</TableCell>
+                          <TableCell>{clean.time}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

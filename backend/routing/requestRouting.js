@@ -9,11 +9,15 @@ router.post('/', async (req, res) => {
     const formData = req.body; // Get form data sent from frontend
     console.log('Received form data:', formData);
 
+    const processedData = {
+        id: parseInt(formData.studentId, 10),
+    };
+
     try {
         // Insert data into the 'students' table in Supabase
         const { data, error } = await supabase
-            .from('students') // The name of your table in Supabase
-            .insert([formData]); // Insert the form data into the table
+            .from('cleaning') // The name of your table in Supabase
+            .insert([processedData]); // Insert the form data into the table
 
         if (error) {
             throw new Error(error.message); // If there's an error with the insertion

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -29,9 +29,21 @@ const MessOffForm = () => {
   const [submitMessage, setSubmitMessage] = useState(""); // Success or error message
   const [toastMessage, setToastMessage] = useState(""); // Toast message
   const [isToastVisible, setIsToastVisible] = useState(false); // Toast visibility
+  const [messOffError, setMessOffError] = useState(""); // Error message for mess off duration
 
-  const searchParams = useSearchParams()
-  const studentId = searchParams.get('id')
+  const searchParams = useSearchParams();
+  const studentId = searchParams.get("id");
+
+  // Reset form to initial state
+  const resetForm = () => {
+    setMessOffDates({
+      requestDate: "",
+      leavingDate: "",
+      arrivalDate: "",
+    });
+    setMessOffError("");
+    setSubmitMessage("");
+  };
 
   // Handle form field changes
   const handleMessOffChange = (e) => {
@@ -44,21 +56,30 @@ const MessOffForm = () => {
 
   // Handle form submission
   const handleMessOffSubmit = async (e) => {
-    const studentId = localStorage.getItem('studentId');
     e.preventDefault();
-    const formData = new FormData(e.target);
 
-    // Access individual form data
-    const requestDate = formData.get("requestDate");
-    const leavingDate = formData.get("leavingDate");
-    const arrivalDate = formData.get("arrivalDate");
+    const { requestDate, leavingDate, arrivalDate } = messOffDates;
+
+    // Calculate the difference in days
+    const diffTime = Math.abs(new Date(arrivalDate) - new Date(leavingDate));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // Validate mess off duration
+    if (diffDays > 14) {
+      setMessOffError("Mess can't be off for more than 14 days");
+      return; // Prevent submission
+    }
+
+    setMessOffError(""); // Clear any previous error
+
+    const studentId = localStorage.getItem("studentId");
 
     // Create an object with the data
     const messOffData = {
       requestDate,
       leavingDate,
       arrivalDate,
-      studentId
+      studentId,
     };
 
     setIsSubmitting(true);
@@ -80,6 +101,7 @@ const MessOffForm = () => {
         setSubmitMessage("Request successfully submitted!"); // Success message
         setToastMessage("Request successfully submitted!");
         setIsDialogOpen(false); // Close dialog
+        resetForm(); // Reset form after successful submission
       } else {
         setSubmitMessage(result.error || "Error occurred while submitting!"); // Error message
         setToastMessage(result.error || "Error occurred while submitting!");
@@ -108,7 +130,13 @@ const MessOffForm = () => {
         </div>
       )}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(isOpen) => {
+          setIsDialogOpen(isOpen);
+          if (!isOpen) resetForm(); // Reset form when dialog is closed
+        }}
+      >
         {/* Trigger: Card UI */}
         <DialogTrigger asChild>
           <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
@@ -168,6 +196,11 @@ const MessOffForm = () => {
                 onChange={handleMessOffChange}
               />
             </div>
+
+            {/* Display error message */}
+            {messOffError && (
+              <div className="text-red-500 text-sm">{messOffError}</div>
+            )}
 
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit Request"}
