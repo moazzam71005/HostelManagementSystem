@@ -74,6 +74,11 @@ export default function ManagerDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut() // Clear session
+    router.push('/') // Redirect to login page
+  }
+
   const fetchData = async () => {
     setLoading(true);
 
@@ -208,24 +213,34 @@ export default function ManagerDashboard() {
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <Avatar className="w-20 h-20">
-              <AvatarImage src={manager.profilePic} alt={manager.name} />
-              <AvatarFallback>
-                {manager.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle>{manager.name}</CardTitle>
-              <CardDescription>
-                {manager.role} | {manager.hostel} Hostel
-              </CardDescription>
+          <CardHeader className="flex flex-row items-center gap-4 justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-20 h-20">
+                <AvatarImage src={manager.profilePic} alt={manager.name} />
+                <AvatarFallback>
+                  {manager.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle>{manager.name}</CardTitle>
+                <CardDescription>
+                  {manager.role} | {manager.hostel} Hostel
+                </CardDescription>
+              </div>
             </div>
+            <Button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
           </CardHeader>
         </Card>
+
 
         <Tabs defaultValue='complaints'
           className="space-y-4">

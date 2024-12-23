@@ -1,15 +1,14 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Input, Textarea } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AlertCircle, Brush, MessageSquare, Phone, UtensilsCrossed, LogOut, UserCircle, Car } from 'lucide-react'
+import { Input } from "@/components/ui/input"
+import { AlertCircle, Brush, Phone, LogOut } from 'lucide-react'
 import supabase from "../../../supabaseClient"
 import ComplaintForm from '../ComplaintForm'
 import MessForm from '../MessForm'
@@ -18,6 +17,7 @@ import VehicleForm from '../VehicleForm'
 
 export default function StudentDashboard() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const studentId = searchParams.get('id')
 
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
@@ -25,13 +25,11 @@ export default function StudentDashboard() {
   const [messOffDates, setMessOffDates] = useState({ requestDate: '', leavingDate: '', arrivalDate: '' })
   const [messOffError, setMessOffError] = useState('')
 
-
   const emergencyContacts = [
     { name: "Hostel Warden", number: "+92 300 1234567" },
     { name: "Campus Security", number: "+92 300 7654321" },
     { name: "Medical Emergency", number: "+92 300 1112223" }
   ]
-
 
   // Fetch student data based on the provided ID
   useEffect(() => {
@@ -67,25 +65,14 @@ export default function StudentDashboard() {
     }
   }, [studentId])
 
-  
-
   const handleCleaningRequest = () => {
     setIsCleaningRequested(true)
     setTimeout(() => setIsCleaningRequested(false), 5000)
   }
 
-  const handleMessOffSubmit = (e) => {
-    e.preventDefault()
-    const { leavingDate, arrivalDate } = messOffDates
-    const diffTime = Math.abs(new Date(arrivalDate) - new Date(leavingDate))
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays > 14) {
-      setMessOffError("Mess can't be off for more than 14 days")
-    } else {
-      setMessOffError('')
-      console.log("Mess off request submitted:", messOffDates)
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut() // Clear session
+    router.push('/') // Redirect to login page
   }
 
   const handleProfileUpdate = (e) => {
@@ -115,29 +102,13 @@ export default function StudentDashboard() {
               <CardTitle>{student.name}</CardTitle>
               <CardDescription>Room: {student.roomNo} | Hostel: {student.hostel}</CardDescription>
             </div>
-            <Dialog>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Edit Profile</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your profile here. Click save when you&apos;re done.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleProfileUpdate} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input id="name" name="name" value={student.name} onChange={handleProfileChange} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="fathersName">Father&apos;s Name</Label>
-                      <Input id="fathersName" name="fathersName" value={student.fathersName} onChange={handleProfileChange} />
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full">Save Changes</Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
           </CardHeader>
         </Card>
 
