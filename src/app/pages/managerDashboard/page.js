@@ -16,9 +16,9 @@ import supabase from "../../../supabaseClient"
 import { useSearchParams } from "next/navigation";
 
 
-
 export default function ManagerDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [dialogState, setDialogState] = useState({
     isOpen: false,
@@ -26,268 +26,157 @@ export default function ManagerDashboard() {
     studentId: null,
     studentName: "",
   });
-  const handleActionClick = async (action, student) => {
-    console.log("Action clicked:", action); // Log the action (accept or reject)
-    console.log("Student info:", student); // Log the student details
-  
-    try {
-      const { error } = await supabase
-        .from("testuser")
-        .update({ approval_status: action === "accept" ? "approved" : "rejected" })
-        .eq("id", student.id); // Update the status of the student based on the action
-  
-      if (error) {
-        console.error("Error updating student:", error.message);
-      } else {
-        console.log(`Student ${action}ed successfully`);
-        
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
-  };
 
-  // Mock data - replace with actual data fetching logic
-  const [complaints, setComplaints] = useState([
-    { 
-      id: 1, 
-      title: 'Broken Faucet', 
-      type: 'Plumbing', 
-      status: 'Pending', 
-      date: '2024-03-01', 
-      roomNo: 'A101', 
-      studentName: 'John Doe', 
-      regNo: '2021CS101',
-      description: 'The faucet in the bathroom is leaking continuously and needs immediate repair.',
-      complaintType: 'Plumber'
-    },
-    { 
-      id: 2, 
-      title: 'Flickering Lights', 
-      type: 'Electrical', 
-      status: 'In Progress', 
-      date: '2024-03-02', 
-      roomNo: 'B205', 
-      studentName: 'Jane Smith', 
-      regNo: '2022EE056',
-      description: 'The lights in the study area are flickering, making it difficult to read at night.',
-      complaintType: 'Electric'
-    },
-    { 
-      id: 3, 
-      title: 'Loose Door Handle', 
-      type: 'Carpentry', 
-      status: 'Resolved', 
-      date: '2024-03-03', 
-      roomNo: 'C309', 
-      studentName: 'Alex Johnson', 
-      regNo: '2020ME078',
-      description: 'The door handle of the main door is loose and might fall off soon.',
-      complaintType: 'Wood'
-    },
-  ])
-
-  useEffect(() => {
-    
-    console.log("Hello bruv");
-    const fetchedComplaintData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("testcomplaint") 
-        .select("cid, complaintTitle, complaintType, details, submitted_at, testuser(name, roomno)");
-  
-      if (error) {
-        console.error("Error fetching Complaint data:", error.message);
-        setLoading(false);
-        return;
-      }
-
-      console.log('id is ', data[0].cid);
-      console.log('name is ', data[0].testuser?.name);
-      console.log('title is ', data[0].complaintTitle);
-      console.log('type is ', data[0].complaintType);
-
-      if (data && data.length > 0) {
-        
-        const formattedComplaints = data.map((complaint) => ({
-          id: complaint.cid,
-          title: complaint.complaintTitle,
-          studentName: complaint.testuser?.name,
-          regNo: complaint.cid,
-          roomNo: complaint.testuser?.roomno,
-          type: complaint.complaintType,
-          date: complaint.submitted_at,
-          description: complaint.details,
-          status: complaint.status || 'Pending', // Use status from the database, default to 'Pending'
-        }));
-        setComplaints(formattedComplaints);
-      }
-  
-      setLoading(false);
-    };
-  
-    fetchedComplaintData();
-  }, []); // Empty dependency array means this runs once when the component mounts
-  
-
-
-
-  const [messOffRequests, setMessOffRequests] = useState([
-    { id: 1, studentName: 'Alice Johnson', regNo: '2021CS102', roomNo: 'D404', requestDate: '2024-03-10', from: '2024-03-10', to: '2024-03-15', status: 'Pending' },
-    { id: 2, studentName: 'Bob Smith', regNo: '2022EE057', roomNo: 'E505', requestDate: '2024-03-10', from: '2024-03-12', to: '2024-03-14', status: 'Approved' },
-  ])
-  
-  
-  useEffect(() => {
-    const fetchedMessData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("testmess") // Replace "managers" with your table name
-        .select("id, requestDate, leavingDate, arrivalDate, testuser(name, roomno)");
-  
-      if (error) {
-        console.error("Error fetching Mess data:", error.message);
-        setLoading(false);
-        return;
-      }
-  
-      if (data && data.length > 0) {
-        const formattedMessRequests = data.map((mess) => ({
-          id: mess.id,
-          requestDate: mess.requestDate,
-          from: mess.leavingDate,
-          to: mess.arrivalDate,
-          status: mess.status || 'Pending',
-          studentName: mess.testuser?.name,
-          roomNo: mess.testuser?.roomno,
-          regNo: mess.id
-        }));
-        setMessOffRequests(formattedMessRequests);
-      }
-  
-      setLoading(false);
-    };
-  
-    fetchedMessData();
-  }, []);
-  
-
-
-
-
-  const [hostelInOut, setHostelInOut] = useState([
-    { id: 1, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', type: 'Out', leaveDate: '2024-03-05', arrivalDate: '2024-03-07', reason: 'Weekend trip', placeOfLeave: 'Home' },
-    { id: 2, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', type: 'Out', leaveDate: '2024-03-05', arrivalDate: '2024-03-07', reason: 'Weekend trip', placeOfLeave: 'Home' },
-    
-  ])
-
-  
-  useEffect(() => {
-    const fetchHostelData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("testhostel") // Replace "managers" with your table name
-        .select("id, dateOfLeave, dateOfArrival, placeOfLeave, purpose, testuser(name, roomno)");
-  
-      if (error) {
-        console.error("Error fetching hostel data:", error.message);
-        setLoading(false);
-        return;
-      }
-  
-      if (data && data.length > 0) {
-        const formattedHostelLogs = data.map((log) => ({
-          id: log.id,
-          leaveDate: log.dateOfLeave,
-          arrivalDate: log.dateOfArrival,
-          placeOfLeave: log.placeOfLeave,
-          reason: log.purpose,
-          studentName: log.testuser?.name,
-          roomNo: log.testuser?.roomno,
-          regNo: log.id
-        }));
-        setHostelInOut(formattedHostelLogs);
-      }
-  
-      setLoading(false);
-    };
-  
-    fetchHostelData();
-  }, []);
-  
-
-
-  const [pendingStudents, setPendingStudents] = useState([
-    {id: 1, studentName: 'Charlie Brown', regNo: '2020ME079', roomNo: 'F606', hostel: 'xyz', contactNum: '012', nustEmail: 'a@', school: 'xyz', department: 'xyz'},
-    {id: 2, studentName: 'Charlie Brown', regNo: '2020ME078', roomNo: 'F606', hostel: 'xyz', contactNum: '012', nustEmail: 'a@', school: 'xyz', department: 'xyz'}
-  ])
-
-  useEffect(() => {
-    const fetchStudentData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("testuser") // Replace "managers" with your table name
-        .select("*")
-        .eq("approval_status", "pending");
-  
-      if (error) {
-        console.error("Error fetching student data:", error.message);
-        setLoading(false);
-        return;
-      }
-  
-      if (data && data.length > 0) {
-        const formattedStudents = data.map((student) => ({
-          id: student.id,
-          studentName: student.name,
-          regNo: student.id,
-          contactNum: student.contactno,
-          nustEmail: student.nustemail,
-          school: student.school,
-          department: student.discipline,
-          hostel: student.hostel,
-          roomNo: student.roomno,
-        }));
-        setPendingStudents(formattedStudents);
-      }
-  
-      setLoading(false);
-    };
-  
-    fetchStudentData();
-  }, []);
-  
+  const [complaints, setComplaints] = useState([]);
+  const [messOffRequests, setMessOffRequests] = useState([]);
+  const [hostelInOut, setHostelInOut] = useState([]);
+  const [pendingStudents, setPendingStudents] = useState([]);
   const [manager, setManager] = useState({
     name: "Jane Doe",
     role: "Hostel Manager",
     hostel: "Beruni",
     profilePic: "/placeholder.svg",
   });
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const handleActionClick = async (action, student) => {
+    try {
+      const { error } = await supabase
+        .from("testuser")
+        .update({ approval_status: action === "accept" ? "approved" : "rejected" })
+        .eq("id", student.id);
 
-  const searchParams = useSearchParams(); // Hook to access URL parameters
-
-  useEffect(() => {
-    const fetchManagerData = async () => {
-      const id = searchParams.get("id"); // Get the 'id' from the URL
-      if (!id) {
-        console.error("No ID provided in URL");
+      if (error) {
+        console.error("Error updating student:", error.message);
         return;
       }
 
-      setLoading(true);
+      // Remove the updated student from pendingStudents
+      setPendingStudents((prev) => prev.filter((s) => s.id !== student.id));
+      console.log(`Student ${action}ed successfully`);
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    if (!status) return <Badge>Unknown</Badge>;
+
+    switch (status.toLowerCase()) {
+      case "pending":
+        return <Badge variant="secondary">{status}</Badge>;
+      case "in progress":
+        return <Badge variant="warning">{status}</Badge>;
+      case "resolved":
+        return <Badge variant="success">{status}</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    try {
+      const [complaintRes, messRes, hostelRes, studentRes] = await Promise.all([
+        supabase
+          .from("testcomplaint")
+          .select("cid, complaintTitle, complaintType, details, submitted_at, testuser(name, roomno)"),
+          //.eq("testuser.hostel", manager.hostel),
+        supabase
+          .from("testmess")
+          .select("id, requestDate, leavingDate, arrivalDate, testuser(name, roomno)"),
+          //.eq("testuser.hostel",manager.hostel),
+        supabase
+          .from("testhostel")
+          .select("id, dateOfLeave, dateOfArrival, placeOfLeave, purpose, testuser(name, roomno)"),
+          //.eq("testuser.hostel", manager.hostel),
+        supabase
+          .from("testuser")
+          .select("*")
+          .eq("approval_status", "pending")
+          //.eq("hostel", manager.hostel),
+      ]);
+
+      if (complaintRes.error) throw complaintRes.error;
+      if (messRes.error) throw messRes.error;
+      if (hostelRes.error) throw hostelRes.error;
+      if (studentRes.error) throw studentRes.error;
+
+      setComplaints(
+        complaintRes.data.map((c) => ({
+          id: c.cid,
+          title: c.complaintTitle,
+          studentName: c.testuser?.name,
+          regNo: c.cid,
+          roomNo: c.testuser?.roomno,
+          type: c.complaintType,
+          date: c.submitted_at,
+          description: c.details,
+          status: c.status || "Pending",
+        }))
+      );
+
+      setMessOffRequests(
+        messRes.data.map((m) => ({
+          id: m.id,
+          requestDate: m.requestDate,
+          from: m.leavingDate,
+          to: m.arrivalDate,
+          status: m.status || "Pending",
+          studentName: m.testuser?.name,
+          roomNo: m.testuser?.roomno,
+          regNo: m.id,
+        }))
+      );
+
+      setHostelInOut(
+        hostelRes.data.map((h) => ({
+          id: h.id,
+          leaveDate: h.dateOfLeave,
+          arrivalDate: h.dateOfArrival,
+          placeOfLeave: h.placeOfLeave,
+          reason: h.purpose,
+          studentName: h.testuser?.name,
+          roomNo: h.testuser?.roomno,
+          regNo: h.id,
+        }))
+      );
+
+      setPendingStudents(
+        studentRes.data.map((s) => ({
+          id: s.id,
+          studentName: s.name,
+          regNo: s.id,
+          contactNum: s.contactno,
+          nustEmail: s.nustemail,
+          school: s.school,
+          department: s.discipline,
+          hostel: s.hostel,
+          roomNo: s.roomno,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchManagerData = async () => {
+      const id = searchParams.get("id");
+      if (!id) return;
 
       try {
         const { data, error } = await supabase
-          .from("testuser") // Replace with your actual table name
+          .from("testuser")
           .select("*")
           .eq("id", id)
-          .single(); // Fetch a single row matching the ID
+          .single();
 
         if (error) {
           console.error("Error fetching manager data:", error.message);
-          setLoading(false);
           return;
         }
 
@@ -296,37 +185,24 @@ export default function ManagerDashboard() {
             name: data.name,
             role: data.role,
             hostel: data.hostel,
-            profilePic: data.profilePic || "/placeholder.svg", // Use a default profile picture if not provided
+            profilePic: data.profilePic || "/placeholder.svg",
           });
         }
       } catch (fetchError) {
         console.error("Unexpected error fetching manager data:", fetchError);
       }
-
-      setLoading(false);
     };
 
     fetchManagerData();
   }, [searchParams]);
 
+  useEffect(() => {
+    fetchData(); // Initial data fetch on mount
 
-  const getStatusBadge = (status) => {
-    if (!status) {
-      console.error("Status is undefined or null:", status);
-      return <Badge>Unknown</Badge>;
-    }
-    
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return <Badge variant="secondary">{status}</Badge>
-      case 'in progress':
-        return <Badge variant="warning">{status}</Badge>
-      case 'resolved':
-        return <Badge variant="success">{status}</Badge>
-      default:
-        return <Badge>{status}</Badge>
-    }
-  }
+    const intervalId = setInterval(fetchData, 10000); // Refresh every 10 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
@@ -351,7 +227,8 @@ export default function ManagerDashboard() {
           </CardHeader>
         </Card>
 
-        <Tabs defaultValue="complaints" className="space-y-4">
+        <Tabs defaultValue='complaints'
+          className="space-y-4">
           <TabsList>
             <TabsTrigger value="complaints">Complaints</TabsTrigger>
             <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
@@ -513,8 +390,8 @@ export default function ManagerDashboard() {
                         <TableHead>Student Name</TableHead>
                         <TableHead>Reg. No.</TableHead>
                         <TableHead>Room No.</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Leaving Date</TableHead>
+                        <TableHead>Arrival Date</TableHead>
                         <TableHead>Reason</TableHead>
                         <TableHead>Place of Leave</TableHead>
                       </TableRow>
@@ -525,8 +402,8 @@ export default function ManagerDashboard() {
                           <TableCell>{record.studentName}</TableCell>
                           <TableCell>{record.regNo}</TableCell>
                           <TableCell>{record.roomNo}</TableCell>
-                          <TableCell>{record.type}</TableCell>
-                          <TableCell>{record.date}</TableCell>
+                          <TableCell>{record.leaveDate}</TableCell>
+                          <TableCell>{record.arrivalDate}</TableCell>
                           <TableCell>{record.reason}</TableCell>
                           <TableCell>{record.placeOfLeave}</TableCell>
                         </TableRow>
