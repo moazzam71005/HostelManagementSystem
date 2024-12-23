@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { AlertCircle, ClipboardList, UtensilsCrossed, LogOut } from 'lucide-react'
 import {useRouter} from 'next/navigation'
 import supabase from "../../../supabaseClient"
+import { useSearchParams } from "next/navigation";
 
 
 
@@ -25,30 +26,26 @@ export default function ManagerDashboard() {
     studentId: null,
     studentName: "",
   });
+  const handleActionClick = async (action, student) => {
+    console.log("Action clicked:", action); // Log the action (accept or reject)
+    console.log("Student info:", student); // Log the student details
   
-  const handleActionClick = (action, student) => {
-    setDialogState({
-      isOpen: true,
-      action,
-      studentId: student.id,
-      studentName: student.studentName,
-    });
-  };
+    try {
+      const { error } = await supabase
+        .from("testuser")
+        .update({ approval_status: action === "accept" ? "approved" : "rejected" })
+        .eq("id", student.id); // Update the status of the student based on the action
   
-  const handleConfirm = async (action, studentId) => {
-    // Add logic to update the database for accept/reject actions
-    if (action === "accept") {
-      console.log(`Accepted student with ID: ${studentId}`);
-      // Add logic to handle acceptance
-    } else {
-      console.log(`Rejected student with ID: ${studentId}`);
-      // Add logic to handle rejection
+      if (error) {
+        console.error("Error updating student:", error.message);
+      } else {
+        console.log(`Student ${action}ed successfully`);
+        
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
-  
-    setDialogState({ isOpen: false, action: "", studentId: null, studentName: "" });
   };
-  
-
 
   // Mock data - replace with actual data fetching logic
   const [complaints, setComplaints] = useState([
@@ -91,6 +88,7 @@ export default function ManagerDashboard() {
   ])
 
   useEffect(() => {
+    
     console.log("Hello bruv");
     const fetchedComplaintData = async () => {
       setLoading(true);
@@ -268,35 +266,48 @@ export default function ManagerDashboard() {
 
   const [loading, setLoading] = useState(true); // Add a loading state
 
+  const searchParams = useSearchParams(); // Hook to access URL parameters
+
   useEffect(() => {
     const fetchManagerData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("testmanager") // Replace "managers" with your table name
-        .select("*")
-        .eq("hostel", "Attar"); // Adjust the filter based on your criteria (e.g., ID, role, etc.)
-
-      if (error) {
-        console.error("Error fetching manager data:", error.message);
-        setLoading(false);
+      const id = searchParams.get("id"); // Get the 'id' from the URL
+      if (!id) {
+        console.error("No ID provided in URL");
         return;
       }
 
-      if (data && data.length > 0) {
-        const fetchedManager = data[0];
-        setManager({
-          name: fetchedManager.name,
-          role: fetchedManager.designation,
-          hostel: fetchedManager.hostel,
-          profilePic: fetchedManager.profilePic || "/placeholder.svg", // Use a default profile picture if not provided
-        });
+      setLoading(true);
+
+      try {
+        const { data, error } = await supabase
+          .from("testuser") // Replace with your actual table name
+          .select("*")
+          .eq("id", id)
+          .single(); // Fetch a single row matching the ID
+
+        if (error) {
+          console.error("Error fetching manager data:", error.message);
+          setLoading(false);
+          return;
+        }
+
+        if (data) {
+          setManager({
+            name: data.name,
+            role: data.role,
+            hostel: data.hostel,
+            profilePic: data.profilePic || "/placeholder.svg", // Use a default profile picture if not provided
+          });
+        }
+      } catch (fetchError) {
+        console.error("Unexpected error fetching manager data:", fetchError);
       }
 
       setLoading(false);
     };
 
     fetchManagerData();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, [searchParams]);
 
 
   const getStatusBadge = (status) => {
@@ -569,9 +580,7 @@ export default function ManagerDashboard() {
                             {/* Accept and Reject buttons */}
                             <Button
                               className="mr-2 bg-green-100 text-black hover:bg-green-500"
-                              onClick={() => {
-                                console.log("Stay humble, Eh");
-                                handleActionClick("accept", record)}}
+                              onClick={() => handleActionClick("accept", record)}
                             >
                               Accept
                             </Button>
@@ -590,38 +599,6 @@ export default function ManagerDashboard() {
               )}
             </CardContent>
           </Card>
-          {/* Confirmation Dialog */}
-          {dialogState.isOpen && (
-            <Dialog>
-              <DialogHeader>
-                <DialogTitle>
-                  Confirm{" "}
-                  {dialogState.action === "accept" ? "Acceptance" : "Rejection"}
-                </DialogTitle>
-              </DialogHeader>
-              <DialogContent>
-                <DialogDescription>
-                  Are you sure you want to {dialogState.action} this student?
-                </DialogDescription>
-                <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={() =>
-                      handleConfirm(dialogState.action, dialogState.studentId)
-                    }
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      setDialogState({ ...dialogState, isOpen: false })
-                    }
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
         </Tabs>
         <Card>
           <CardHeader>

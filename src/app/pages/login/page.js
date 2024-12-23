@@ -9,49 +9,52 @@ import { useRouter } from 'next/navigation';
 import supabase from '../../../supabaseClient';
 import bcrypt from 'bcryptjs';
 
-
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Fetch user data from the database
     const { data, error } = await supabase
       .from('testuser')
       .select('*')
       .eq('email', email)
       .single();
 
+    // Check if the user exists
     if (error || !data) {
       setError("Invalid email or user not found.");
       return;
     }
 
+    // Verify the password
     const isValidPassword = await bcrypt.compare(password, data.password_hash);
-
     if (!isValidPassword) {
       setError("Incorrect password.");
       return;
     }
 
-
-    if (data.approval_status === "approved") {
-      localStorage.setItem('studentId', data.id);
-      router.push(`/pages/studentDashboard?id=${data.id}`);
-  
-    } else {
+    // Check if the account is approved
+    if (data.approval_status !== "approved") {
       setError("Your account is not yet approved.");
+      return;
     }
 
+    // Route based on the user's role
+    if (data.role === "student") {
+      localStorage.setItem('studentId', data.id);
+      router.push(`/pages/studentDashboard?id=${data.id}`);
+    } else if (data.role === "manager") {
+      localStorage.setItem('managerId', data.id);
+      router.push(`/pages/managerDashboard?id=${data.id}`);
+    } else {
+      setError("Invalid role assigned to the user.");
+    }
   };
-
-
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -108,11 +111,11 @@ export default function LoginPage() {
             </Link>
           </div>
           <div className='space-y-[1vh]'>
-              <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to student Dashboard');
+              <Button type="button" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to student Dashboard');
             router.push("/pages/studentDashboard")}}>
                 Student Dashboard
               </Button>
-              <Button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to Manager Dashboard');
+              <Button type="button" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={() => {console.log('Navigate to Manager Dashboard');
             router.push("/pages/managerDashboard")}}>
                 Manager Dashboard
               </Button>
