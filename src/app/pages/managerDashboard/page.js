@@ -16,6 +16,7 @@ import supabase from "../../../supabaseClient"
 import { useSearchParams } from "next/navigation";
 
 
+
 export default function ManagerDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,6 +41,8 @@ export default function ManagerDashboard() {
     profilePic: "/placeholder.svg",
   });
   const [loading, setLoading] = useState(true);
+  const [announcementTitle, setAnnouncementTitle] = useState('');
+  const [announcementDescription, setAnnouncementDescription] = useState('');
 
   const handleActionClick = async (action, student) => {
     try {
@@ -80,6 +83,20 @@ export default function ManagerDashboard() {
     await supabase.auth.signOut() // Clear session
     router.push('/') // Redirect to login page
   }
+
+  const handleAddAnnouncement = async () => {
+    const id = searchParams.get("id");
+    try {
+      const { data, error } = await supabase.from("announcements").insert([
+        {  title: announcementTitle, description: announcementDescription, manager_id: id },
+      ]);
+      if (error) throw error;
+      alert("Announcement added successfully!");
+    } catch (error) {
+      console.error("Error adding announcement:", error.message);
+    }
+  };
+  
 
   const fetchData = async () => {
     setLoading(true);
@@ -251,24 +268,57 @@ export default function ManagerDashboard() {
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <Card>
-          <CardHeader className="flex flex-row items-center gap-4 justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="w-20 h-20">
-                <AvatarImage src={manager.profilePic} alt={manager.name} />
-                <AvatarFallback>
-                  {manager.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle>{manager.name}</CardTitle>
-                <CardDescription>
-                  {manager.role} | {manager.hostel} Hostel
-                </CardDescription>
-              </div>
+        <CardHeader className="flex flex-row items-center gap-4 justify-between">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={manager.profilePic} alt={manager.name} />
+              <AvatarFallback>
+                {manager.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle>{manager.name}</CardTitle>
+              <CardDescription>
+                {manager.role} | {manager.hostel} Hostel
+              </CardDescription>
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-500 text-white hover:bg-blue-600">
+                  Add Announcements
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Announcement</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <input className="form-input w-full border rounded p-2"
+                    placeholder="Title"
+                    value={announcementTitle}
+                    onChange={(e) => setAnnouncementTitle(e.target.value)}
+                  />
+                  <textarea className="form-textarea w-full border rounded p-2"
+                    placeholder="Description"
+                    value={announcementDescription}
+                    onChange={(e) =>
+                      setAnnouncementDescription(e.target.value)
+                    }
+                  />
+                  <Button
+                    onClick={handleAddAnnouncement}
+                    className="bg-green-500 text-white hover:bg-green-600"
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Button
               onClick={handleLogout}
               className="flex items-center gap-2 bg-red-500 text-white hover:bg-red-600"
@@ -276,8 +326,9 @@ export default function ManagerDashboard() {
               <LogOut className="w-4 h-4" />
               Logout
             </Button>
-          </CardHeader>
-        </Card>
+          </div>
+        </CardHeader>
+      </Card>
 
 
         <Tabs defaultValue='complaints'
@@ -554,6 +605,7 @@ export default function ManagerDashboard() {
             </Card>
           </TabsContent>
           
+         <TabsContent value="awaitingStudents">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -616,6 +668,7 @@ export default function ManagerDashboard() {
               )}
             </CardContent>
           </Card>
+        </TabsContent> 
         </Tabs>
         <Card>
           <CardHeader>

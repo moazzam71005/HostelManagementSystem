@@ -123,7 +123,7 @@ const VehicleForm = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Register your vehicle for campus parking
+                Register your vehicle
               </p>
             </CardContent>
           </Card>

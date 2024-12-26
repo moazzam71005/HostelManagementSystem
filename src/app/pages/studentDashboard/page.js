@@ -22,6 +22,7 @@ export default function StudentDashboard() {
 
   const [isCleaningRequested, setIsCleaningRequested] = useState(false)
   const [student, setStudent] = useState(null)
+  const [announcements, setAnnouncements] = useState([]) // New state for announcements
   const [messOffDates, setMessOffDates] = useState({ requestDate: '', leavingDate: '', arrivalDate: '' })
   const [messOffError, setMessOffError] = useState('')
 
@@ -64,6 +65,24 @@ export default function StudentDashboard() {
       fetchStudentData()
     }
   }, [studentId])
+
+  // Fetch announcements
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      const { data, error } = await supabase
+        .from('announcements') // Assuming you have an "announcements" table
+        .select('title, description') // Select the columns you need
+        .order('created_at', { ascending: false }) // Optional: Sort by creation date
+
+      if (error) {
+        console.error("Error fetching announcements:", error.message)
+      } else {
+        setAnnouncements(data) // Set the fetched announcements to state
+      }
+    }
+
+    fetchAnnouncements()
+  }, []) // Fetch announcements only once when component mounts
 
   const handleCleaningRequest = async (e) => {
     e.preventDefault();
@@ -206,7 +225,19 @@ export default function StudentDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">No new announcements at this time.</p>
+            {/* Loop through announcements and display them */}
+            {announcements.length > 0 ? (
+              announcements.map((announcement, index) => (
+                <div key={index} className="space-y-4 mb-4">
+                  <div>
+                    <h3 className="font-semibold text-lg">{announcement.title}</h3>
+                    <p className="text-sm text-muted-foreground">{announcement.description}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No new announcements at this time.</p>
+            )}
           </CardContent>
         </Card>
       </div>
