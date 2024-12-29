@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
+import { Utensils } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -139,11 +140,11 @@ const MessOffForm = () => {
       >
         {/* Trigger: Card UI */}
         <DialogTrigger asChild>
-          <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
+          <Card className="transition-transform transform hover:scale-105 hover:shadow-2xl bg-white/70">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">🍽</span> {/* Example icon */}
-                Mess Off
+              <Utensils className="w-4 h-4" />
+              <span className='zoom-animation'>Mess Off</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {House} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from 'next/navigation'
 import {
@@ -96,14 +97,14 @@ const HostelForm = () => {
         </div>
       )}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
         {/* Trigger: Card UI */}
         <DialogTrigger asChild>
-          <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
+          <Card className="transition-transform transform hover:scale-105 hover:shadow-2xl bg-white/70 ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="w-4 h-4">\ud83c\udfe0</span> {/* Example icon */}
-                Hostel In/Out
+              <House className="w-4 h-4" />
+              <span className='zoom-animation'>Hostel In/Out</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

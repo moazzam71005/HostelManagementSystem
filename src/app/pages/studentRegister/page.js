@@ -80,8 +80,8 @@ export default function StudentRegistration() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+    <div className="min-h-screen bg-gradient-to-r from-teal-400 to-green-400 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto bg-white/70 rounded-xl shadow-md overflow-hidden md:max-w-2xl">
         <div className="md:flex flex-col items-center">
           <div className="p-8 w-full">
             <div className="text-center mb-6">
@@ -108,32 +108,32 @@ export default function StudentRegistration() {
                 className="hidden"
                 aria-label="Upload profile picture"
               />
-              <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Student Registration</div>
+              <div className="uppercase tracking-wide  text-indigo-500 text-xl font-bold"><span className='shine-text-2'>Student Registration</span></div>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="registrationNo">Registration No.</Label>
-                <Input id="registrationNo" name="registrationNo" type="text" required value={formData.registrationNo} onChange={handleInputChange} />
+                <Label htmlFor="registrationNo" >Registration No.</Label>
+                <Input id="registrationNo" name="registrationNo" className="rounded-xl"  type="text" required value={formData.registrationNo} onChange={handleInputChange} />
               </div>
               <div>
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" type="text" required value={formData.name} onChange={handleInputChange} />
+                <Input id="name" name="name" className="rounded-xl" type="text" required value={formData.name} onChange={handleInputChange} />
               </div>
               <div>
                 <Label htmlFor="fathername">Father&apos;s Name</Label>
-                <Input id="fathername" name="fathername" type="text" required value={formData.fathername} onChange={handleInputChange} />
+                <Input id="fathername" name="fathername" className="rounded-xl" type="text" required value={formData.fathername} onChange={handleInputChange} />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required value={formData.email} onChange={handleInputChange} />
+                <Input id="email" name="email" className="rounded-xl" type="email" required value={formData.email} onChange={handleInputChange} />
               </div>
               <div>
                 <Label htmlFor="nustemail">NUST Email</Label>
-                <Input id="nustemail" name="nustemail" type="email" required value={formData.nustemail} onChange={handleInputChange} />
+                <Input id="nustemail" name="nustemail" className="rounded-xl" type="email" required value={formData.nustemail} onChange={handleInputChange} />
               </div>
               <div>
               <Label htmlFor="password">Password</Label>
-              <div className="relative">
+              <div className="relative rounded-xl">
                 <Input
                   id="password"
                   name="password"
@@ -155,7 +155,7 @@ export default function StudentRegistration() {
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
+              <div className="relative rounded-xl">
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -182,7 +182,7 @@ export default function StudentRegistration() {
 
               <div>
                 <Label htmlFor="contactNo">Contact No.</Label>
-                <Input id="contactNo" name="contactNo" type="tel" required value={formData.contactNo} onChange={handleInputChange} />
+                <Input id="contactNo" name="contactNo" className="rounded-xl" type="tel" required value={formData.contactNo} onChange={handleInputChange} />
               </div>
               
               <div>
@@ -259,9 +259,9 @@ export default function StudentRegistration() {
               </div>
               <div>
                 <Label htmlFor="roomNo">Room No.</Label>
-                <Input id="roomNo" name="roomNo" type="text" required value={formData.roomNo} onChange={handleInputChange} />
+                <Input id="roomNo" name="roomNo" className='rounded-xl' type="text" required value={formData.roomNo} onChange={handleInputChange} />
               </div>
-              <Button type="submit" className="w-full">Register</Button>
+              <Button type="submit" className="w-full bg-blue-500 hover:bg-indigo-800 text-white font-medium rounded-md py-2 transition-all duration-200 ease-in-out transform hover:scale-105">Register</Button>
             </form>
           </div>
         </div>

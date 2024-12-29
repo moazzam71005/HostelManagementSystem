@@ -265,12 +265,12 @@ export default function ManagerDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-r from-teal-300 to-cyan-400 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <Card>
+        <Card className='bg-white/80'>
         <CardHeader className="flex flex-row items-center gap-4 justify-between">
           <div className="flex items-center gap-4">
-            <Avatar className="w-20 h-20">
+            <Avatar className="w-20 h-20 outline outline-2 outline-green-500 outline-offset-2">
               <AvatarImage src={manager.profilePic} alt={manager.name} />
               <AvatarFallback>
                 {manager.name
@@ -280,8 +280,8 @@ export default function ManagerDashboard() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle>{manager.name}</CardTitle>
-              <CardDescription>
+              <CardTitle className='text-2xl font-bold'>{manager.name}</CardTitle>
+              <CardDescription className="text-sm font-semibold">
                 {manager.role} | {manager.hostel} Hostel
               </CardDescription>
             </div>
@@ -290,7 +290,7 @@ export default function ManagerDashboard() {
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="bg-blue-500 text-white hover:bg-blue-600">
-                  Add Announcements
+                  <span className='zoom-animation'>Add Announcements</span>
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -332,7 +332,7 @@ export default function ManagerDashboard() {
 
 
         <Tabs defaultValue='complaints'
-          className="space-y-4">
+          className="space-y-4 ">
           <TabsList>
             <TabsTrigger value="complaints">Complaints</TabsTrigger>
             <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
@@ -342,9 +342,9 @@ export default function ManagerDashboard() {
             <TabsTrigger value="cleaningrequests">Cleaning Requests</TabsTrigger>
           </TabsList>
           <TabsContent value="complaints">
-            <Card>
+            <Card className='bg-white/70'>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <ClipboardList className="w-5 h-5" />
                   Complaints
                 </CardTitle>
@@ -379,7 +379,7 @@ export default function ManagerDashboard() {
                           <TableCell>
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="outline" size="sm">
+                                <Button variant="outline" size="sm" className="bg-green-400 hover:bg-green-600">
                                   View Details
                                 </Button>
                               </DialogTrigger>
@@ -441,9 +441,9 @@ export default function ManagerDashboard() {
             </Card>
           </TabsContent>
           <TabsContent value="messoff">
-            <Card>
+            <Card className='bg-white/70'>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <UtensilsCrossed className="w-5 h-5" />
                   Mess Off Requests
                 </CardTitle>
@@ -481,9 +481,9 @@ export default function ManagerDashboard() {
             </Card>
           </TabsContent>
           <TabsContent value="inout">
-            <Card>
+            <Card className='bg-white/70'>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <LogOut className="w-5 h-5" />
                   Hostel In/Out Details
                 </CardTitle>
@@ -522,9 +522,9 @@ export default function ManagerDashboard() {
           </TabsContent>
 
           <TabsContent value="vehicleregister">
-            <Card>
+            <Card className="bg-white/70">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <UtensilsCrossed className="w-5 h-5" />
                   Vehicle Registration
                 </CardTitle>
@@ -571,9 +571,9 @@ export default function ManagerDashboard() {
           </TabsContent>
           
           <TabsContent value="cleaningrequests">
-            <Card>
+            <Card className="bg-white/70">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <UtensilsCrossed className="w-5 h-5" />
                   Cleaning Requests
                 </CardTitle>
@@ -606,9 +606,9 @@ export default function ManagerDashboard() {
           </TabsContent>
           
          <TabsContent value="awaitingStudents">
-          <Card>
+          <Card className="bg-white/70"> 
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <LogOut className="w-5 h-5" />
                 Pending Students
               </CardTitle>
@@ -670,11 +670,11 @@ export default function ManagerDashboard() {
           </Card>
         </TabsContent> 
         </Tabs>
-        <Card>
+        <Card className="bg-white/70">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl text-red-600 font-bold ">
               <AlertCircle className="w-5 h-5" />
-              Important Announcements
+              <span className='zoom-animation'>Important Announcements</span>
             </CardTitle>
           </CardHeader>
           <CardContent>

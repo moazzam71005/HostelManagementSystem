@@ -102,13 +102,13 @@ const ComplaintForm = () => {
         {/* Trigger: Card UI */}
         <DialogTrigger asChild>
           <Card
-            className="cursor-pointer hover:bg-gray-50 transition-colors"
+            className="transition-transform transform hover:scale-105 hover:shadow-2xl bg-white/70"
             onClick={() => setIsDialogOpen(true)}
           >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-6" />
-                Register Complaint
+                <span className='zoom-animation'>Register Complaint</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

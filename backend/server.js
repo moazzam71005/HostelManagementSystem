@@ -15,20 +15,19 @@ import staffRoutes from './routing/staffRouting.js';
 import studentRoutes from './routing/studentRouting.js';
 import vehicleRoutes from './routing/vehicleRouting.js';
 
-
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// CORS Configuration
+app.use(cors({
+  origin: 'http://localhost:3000', // Change to your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // Allow credentials like cookies or authorization headers
+}));
 
 app.use(express.json());
-app.use(cors());
-//const memoryStore = new session.MemoryStore();
-
-
-
-
 
 // Define the routes
 app.use('/api/admindashboard', adminDashboardRoutes);
@@ -41,7 +40,6 @@ app.use('/api/request', requestRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/vehicles', vehicleRoutes);
-
 
 // Simple route to check if the server is running
 app.get('/', (req, res) => {

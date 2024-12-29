@@ -27,7 +27,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -53,7 +53,7 @@
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 @layer base {
@@ -64,3 +64,71 @@
     @apply bg-background text-foreground;
   }
 }
+.shine-text {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  background-size: 150%; /* Adjusted to make the shine span a smaller portion of the text */
+  color: transparent; /* Set text color to transparent */
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 2s infinite linear;
+}
+.shine-text-1 {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    rgba(253, 4, 4, 0.8) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(247, 3, 3, 0.8) 100%
+  );
+  background-size: 150%; /* Adjusted to make the shine span a smaller portion of the text */
+  color: transparent; /* Set text color to transparent */
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 2s infinite linear;
+}
+.shine-text-2 {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(
+    90deg,
+    rgba(108, 4, 253, 0.8) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(108, 4, 253, 0.8) 100%
+  );
+  background-size: 150%; /* Adjusted to make the shine span a smaller portion of the text */
+  color: transparent; /* Set text color to transparent */
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 2s infinite linear;
+}
+@keyframes shine {
+  0% {
+    background-position: -150%; /* Start the shine from the left */
+  }
+  100% {
+    background-position: 150%; /* Move the shine over a small portion of the text */
+  }
+}
+.zoom-animation {
+  animation: zoomInOut 2s infinite;
+  display: inline-block; /* Ensures proper animation scaling */
+}
+
+@keyframes zoomInOut {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+
