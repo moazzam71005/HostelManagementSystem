@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import supabase from "../../../supabaseClient";
 import bcrypt from "bcryptjs";
 import Image from 'next/image';
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Updated for Heroicons v2
+import {Eye, EyeOff} from 'lucide-react';
+//import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Updated for Heroicons v2
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -68,7 +69,7 @@ export default function LoginPage() {
       }}
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Image
+        <img
           src="/nust-logo-.png"
           alt="NUST Logo"
           className="mx-auto h-[150px] w-auto"
@@ -128,9 +129,9 @@ export default function LoginPage() {
                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
               >
                 {showPassword ? (
-                  <EyeIcon className="h-5 w-5" />
+                  <Eye className="h-5 w-5" />
                 ) : (
-                  <EyeSlashIcon className="h-5 w-5" />
+                  <EyeOff className="h-5 w-5" />
                 )}
               </span>
             </div>
