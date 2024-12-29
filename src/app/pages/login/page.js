@@ -8,6 +8,7 @@ import { Label } from "../../components/ui/label";
 import { useRouter } from "next/navigation";
 import supabase from "../../../supabaseClient";
 import bcrypt from "bcryptjs";
+import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Updated for Heroicons v2
 
 export default function LoginPage() {
@@ -67,7 +68,7 @@ export default function LoginPage() {
       }}
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
+        <Image
           src="/nust-logo-.png"
           alt="NUST Logo"
           className="mx-auto h-[150px] w-auto"
