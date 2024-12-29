@@ -23,6 +23,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "express-session": "^1.18.1",
+    "heroicons": "^2.2.0",
     "hostel": "file:",
     "lucide-react": "^0.460.0",
     "next": "^15.0.3",
