@@ -78,7 +78,26 @@ export default function ManagerDashboard() {
         return <Badge>{status}</Badge>;
     }
   };
+  const [announcements, setAnnouncements] = useState([]);
 
+   // Fetch announcements
+   useEffect(() => {
+    const fetchAnnouncements = async () => {
+      const { data, error } = await supabase
+        .from("announcements") // Assuming you have an "announcements" table
+        .select("title, description") // Select the columns you need
+        .order("created_at", { ascending: false }); // Optional: Sort by creation date
+
+      if (error) {
+        console.error("Error fetching announcements:", error.message);
+      } else {
+        setAnnouncements(data); // Set the fetched announcements to state
+      }
+    };
+
+    fetchAnnouncements();
+  }, []); // Fetch announcements only once when component mounts
+  
   const handleLogout = async () => {
     await supabase.auth.signOut() // Clear session
     router.push('/') // Redirect to login page
@@ -678,13 +697,28 @@ export default function ManagerDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              No new announcements at this time.
-            </p>
+            {/* Loop through announcements and display them */}
+            {announcements.length > 0 ? (
+              announcements.map((announcement, index) => (
+                <div key={index} className="space-y-4 mb-4">
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {announcement.title}
+                    </h3>
+                    <p className="text-md text-gray-500 hover:text-black transition-colors duration-300">
+                      {announcement.description}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No new announcements at this time.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
