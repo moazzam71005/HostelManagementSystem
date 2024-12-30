@@ -147,8 +147,9 @@ const ComplaintForm = () => {
                 <SelectContent>
                   <SelectItem value="electric">Electric</SelectItem>
                   <SelectItem value="wood">Wood</SelectItem>
-                  <SelectItem value="aluminium">Aluminium</SelectItem>
-                  <SelectItem value="plumber">Plumber</SelectItem>
+                  <SelectItem value="washroom">Washroom</SelectItem>
+                  <SelectItem value="mess">Mess</SelectItem>
+                  <SelectItem value="laundry">Laundry</SelectItem>
                   <SelectItem value="miscellaneous">Miscellaneous</SelectItem>
                 </SelectContent>
               </Select>

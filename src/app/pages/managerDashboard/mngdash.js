@@ -38,6 +38,13 @@ import {
 import { useRouter } from "next/navigation";
 import supabase from "../../../supabaseClient";
 import { useSearchParams } from "next/navigation";
+import ComplaintsTab from "./complaintsTab";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import MessOffRequestsTab from "./messOffRequestsTab";
+import VehicleRegisterTab from "./vehicleRegisterTab";
+import CleaningRequestsTab from "./cleaningRequestsTab";
+
 
 export default function ManagerDashboard() {
   const router = useRouter();
@@ -50,6 +57,7 @@ export default function ManagerDashboard() {
     studentName: "",
   });
 
+  
   const [complaints, setComplaints] = useState([]);
   const [vehicleRegister, setVehicles] = useState([]);
   const [messOffRequests, setMessOffRequests] = useState([]);
@@ -65,6 +73,9 @@ export default function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementDescription, setAnnouncementDescription] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Control dialog visibility
+  const [isSubmitting, setIsSubmitting] = useState(false); // Handle submitting state  
+
 
   const handleActionClick = async (action, student) => {
     try {
@@ -129,6 +140,7 @@ export default function ManagerDashboard() {
 
   const handleAddAnnouncement = async () => {
     const id = searchParams.get("id");
+    setIsSubmitting(true); // Set submitting state
     try {
       const { data, error } = await supabase
         .from("announcements")
@@ -139,10 +151,19 @@ export default function ManagerDashboard() {
             manager_id: id,
           },
         ]);
+
       if (error) throw error;
-      alert("Announcement added successfully!");
+
+      // Show success toast
+      toast.success("Announcement added successfully!");
+      setIsDialogOpen(false); // Close dialog
+      setAnnouncementTitle(""); // Reset title
+      setAnnouncementDescription(""); // Reset description
     } catch (error) {
       console.error("Error adding announcement:", error.message);
+      toast.error(`Error: ${error.message}`); // Show error toast
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
     }
   };
 
@@ -161,15 +182,17 @@ export default function ManagerDashboard() {
         supabase
           .from("testcomplaint")
           .select(
-            "cid, complaintTitle, complaintType, details, submitted_at, testuser!inner(name, roomno)"
+            "serialNum, cid, complaintTitle, complaintType, details, submitted_at, testuser!inner(name, roomno)"
           )
-          .eq("testuser.hostel", manager.hostel),
+          .eq("testuser.hostel", manager.hostel)
+          .eq("status", "pending"),
         supabase
           .from("testmess")
           .select(
-            "id, requestDate, leavingDate, arrivalDate, testuser!inner(name, roomno)"
+            "seqNum, id, requestDate, leavingDate, arrivalDate, testuser!inner(name, roomno)"
           )
-          .eq("testuser.hostel", manager.hostel),
+          .eq("testuser.hostel", manager.hostel)
+          .eq("status", "pending"),
         supabase
           .from("testhostel")
           .select(
@@ -186,7 +209,8 @@ export default function ManagerDashboard() {
         supabase
           .from("cleaning")
           .select("id, time, testuser!inner(name, roomno)")
-          .eq("testuser.hostel", manager.hostel),
+          .eq("testuser.hostel", manager.hostel)
+          .eq("status", "pending"),
         supabase
           .from("testuser")
           .select("*")
@@ -203,7 +227,7 @@ export default function ManagerDashboard() {
 
       setComplaints(
         complaintRes.data.map((c) => ({
-          id: c.cid,
+          id: c.serialNum,
           title: c.complaintTitle,
           studentName: c.testuser?.name,
           regNo: c.cid,
@@ -217,7 +241,7 @@ export default function ManagerDashboard() {
 
       setMessOffRequests(
         messRes.data.map((m) => ({
-          id: m.id,
+          id: m.seqNum,
           requestDate: m.requestDate,
           from: m.leavingDate,
           to: m.arrivalDate,
@@ -372,15 +396,14 @@ export default function ManagerDashboard() {
                       className="form-textarea w-full border rounded p-2"
                       placeholder="Description"
                       value={announcementDescription}
-                      onChange={(e) =>
-                        setAnnouncementDescription(e.target.value)
-                      }
+                      onChange={(e) => setAnnouncementDescription(e.target.value)}
                     />
                     <Button
                       onClick={handleAddAnnouncement}
                       className="bg-green-500 text-white hover:bg-green-600"
+                      disabled={isSubmitting}
                     >
-                      Submit
+                      {isSubmitting ? "Submitting..." : "Submit"}
                     </Button>
                   </div>
                 </DialogContent>
@@ -392,7 +415,10 @@ export default function ManagerDashboard() {
                 <LogOut className="w-4 h-4" />
                 Logout
               </Button>
+              {/* Toast container for notifications */}
+              <ToastContainer />
             </div>
+
           </CardHeader>
         </Card>
 
@@ -410,147 +436,13 @@ export default function ManagerDashboard() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="complaints">
-            <Card className="bg-white/70">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <ClipboardList className="w-5 h-5" />
-                  Complaints
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Reg. No.</TableHead>
-                        <TableHead>Room No.</TableHead>
-                        <TableHead>Complaint Type</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {complaints.map((complaint) => (
-                        <TableRow key={complaint.id}>
-                          <TableCell>{complaint.title}</TableCell>
-                          <TableCell>{complaint.studentName}</TableCell>
-                          <TableCell>{complaint.regNo}</TableCell>
-                          <TableCell>{complaint.roomNo}</TableCell>
-                          <TableCell>{complaint.type}</TableCell>
-                          <TableCell>{complaint.date}</TableCell>
-                          <TableCell>
-                            {getStatusBadge(complaint.status)}
-                          </TableCell>
-                          <TableCell>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="bg-green-400 hover:bg-green-600"
-                                >
-                                  View Details
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-3xl">
-                                <DialogHeader>
-                                  <DialogTitle>Complaint Details</DialogTitle>
-                                </DialogHeader>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <p>
-                                      <strong>Title:</strong> {complaint.title}
-                                    </p>
-                                    <p>
-                                      <strong>Student Name:</strong>{" "}
-                                      {complaint.studentName}
-                                    </p>
-                                    <p>
-                                      <strong>Registration No.:</strong>{" "}
-                                      {complaint.regNo}
-                                    </p>
-                                    <p>
-                                      <strong>Room No.:</strong>{" "}
-                                      {complaint.roomNo}
-                                    </p>
-                                    <p>
-                                      <strong>Complaint Type:</strong>{" "}
-                                      {complaint.complaintType}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p>
-                                      <strong>Date:</strong> {complaint.date}
-                                    </p>
-                                    <p>
-                                      <strong>Status:</strong>{" "}
-                                      {complaint.status}
-                                    </p>
-                                    <p>
-                                      <strong>Description:</strong>{" "}
-                                      {complaint.description}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex justify-end space-x-2 mt-4">
-                                  <Button size="sm" variant="outline">
-                                    Update Status
-                                  </Button>
-                                  <Button size="sm">Resolve</Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <ComplaintsTab complaints={complaints} setComplaints = {setComplaints}  />
           </TabsContent>
           <TabsContent value="messoff">
-            <Card className="bg-white/70">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <UtensilsCrossed className="w-5 h-5" />
-                  Mess Off Requests
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Reg. No.</TableHead>
-                        <TableHead>Room No.</TableHead>
-                        <TableHead>From</TableHead>
-                        <TableHead>To</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {messOffRequests.map((request) => (
-                        <TableRow key={request.id}>
-                          <TableCell>{request.studentName}</TableCell>
-                          <TableCell>{request.regNo}</TableCell>
-                          <TableCell>{request.roomNo}</TableCell>
-                          <TableCell>{request.from}</TableCell>
-                          <TableCell>{request.to}</TableCell>
-                          <TableCell>
-                            {getStatusBadge(request.status)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <MessOffRequestsTab
+              messOffRequests={messOffRequests}
+              setMessOffRequests={setMessOffRequests}
+            />
           </TabsContent>
           <TabsContent value="inout">
             <Card className="bg-white/70">
@@ -594,87 +486,14 @@ export default function ManagerDashboard() {
           </TabsContent>
 
           <TabsContent value="vehicleregister">
-            <Card className="bg-white/70">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <UtensilsCrossed className="w-5 h-5" />
-                  Vehicle Registration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Reg. No.</TableHead>
-                        <TableHead>Room No.</TableHead>
-                        <TableHead>Vehicle Type</TableHead>
-                        <TableHead>Model</TableHead>
-                        <TableHead>Vehicle Name</TableHead>
-                        <TableHead>Engine No.</TableHead>
-                        <TableHead>Chassis No.</TableHead>
-                        <TableHead>Owner Name</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {vehicleRegister.map((vehicle) => (
-                        <TableRow key={vehicle.id}>
-                          <TableCell>{vehicle.studentName}</TableCell>
-                          <TableCell>{vehicle.id}</TableCell>
-                          <TableCell>{vehicle.roomNo}</TableCell>
-                          <TableCell>{vehicle.type}</TableCell>
-                          <TableCell>{vehicle.model}</TableCell>
-                          <TableCell>{vehicle.vehicleName}</TableCell>
-                          <TableCell>{vehicle.engineNum}</TableCell>
-                          <TableCell>{vehicle.chassisNum}</TableCell>
-                          <TableCell>{vehicle.ownerName}</TableCell>
-                          <TableCell>
-                            {getStatusBadge(vehicle.status)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <VehicleRegisterTab
+              vehicleRegister={vehicleRegister}
+              setVehicleRegister={setVehicles}
+            />
           </TabsContent>
 
           <TabsContent value="cleaningrequests">
-            <Card className="bg-white/70">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <UtensilsCrossed className="w-5 h-5" />
-                  Cleaning Requests
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px] w-full">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>Reg. No.</TableHead>
-                        <TableHead>Room No.</TableHead>
-                        <TableHead>Time</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cleaningRequests.map((clean) => (
-                        <TableRow key={clean.id}>
-                          <TableCell>{clean.studentName}</TableCell>
-                          <TableCell>{clean.id}</TableCell>
-                          <TableCell>{clean.roomNo}</TableCell>
-                          <TableCell>{clean.time}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+            <CleaningRequestsTab cleaningRequests={cleaningRequests} />
           </TabsContent>
 
           <TabsContent value="awaitingStudents">

@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 
 
     const formData = req.body; // Get form data sent from frontend
-    console.log('Received form data haha:', formData);
+    console.log('Received form data:', formData);
     //console.log('student id is ', studentId);
 
     const processedData = {
