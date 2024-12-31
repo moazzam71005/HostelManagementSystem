@@ -14,8 +14,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UtensilsCrossed } from "lucide-react";
+import { Brush, UtensilsCrossed } from "lucide-react";
 import supabase from "../../../supabaseClient";
+import { Button } from "@/components/ui/button"; // Make sure to import Button here
 
 const CleaningRequestsTab = ({ cleaningRequests }) => {
   const [updatedRequests, setUpdatedRequests] = useState(new Set()); // Set to track which requests have been updated
@@ -34,8 +35,12 @@ const CleaningRequestsTab = ({ cleaningRequests }) => {
         return;
       }
 
-      // Add the updated ID to the set
-      setUpdatedRequests((prevUpdatedRequests) => new Set(prevUpdatedRequests.add(id)));
+      // Add the updated ID to the set correctly (ensure immutability)
+      setUpdatedRequests((prevUpdatedRequests) => {
+        const newUpdatedRequests = new Set(prevUpdatedRequests);
+        newUpdatedRequests.add(id);
+        return newUpdatedRequests;
+      });
     } catch (err) {
       console.error("Error handling update:", err);
     }
@@ -50,7 +55,7 @@ const CleaningRequestsTab = ({ cleaningRequests }) => {
     <Card className="bg-white/70">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
-          <UtensilsCrossed className="w-5 h-5" />
+          <Brush className="w-5 h-5" />
           Cleaning Requests
         </CardTitle>
       </CardHeader>
@@ -74,17 +79,18 @@ const CleaningRequestsTab = ({ cleaningRequests }) => {
                   <TableCell>{clean.roomNo}</TableCell>
                   <TableCell>{clean.time}</TableCell>
                   <TableCell>
-                    <button
-                      onClick={() => handleUpdate(clean.id)}
+                    <Button
+                      size="sm"
                       className={`${
-                        updatedRequests.has(clean.id)
-                          ? "bg-gray-400 cursor-not-allowed"  // Dull color and disabled state
-                          : "bg-blue-500 hover:bg-blue-600"
-                      } text-white p-2 rounded`}
-                      disabled={updatedRequests.has(clean.id)} // Disable button if updated
+                        clean.status === "pending" || updatedRequests.has(clean.id)
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-white hover:bg-blue-900 hover:text-white"
+                      } text-black`}
+                      onClick={() => handleUpdate(clean.id)}
+                      disabled={clean.status === "cleaned" || updatedRequests.has(clean.id)}
                     >
-                      {updatedRequests.has(clean.id) ? "Updated" : "Update"} {/* Change text to 'Updated' */}
-                    </button>
+                      {updatedRequests.has(clean.id) || clean.status === "cleaned" ? "Updated" : "Update"}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

@@ -64,7 +64,7 @@ export default function LoginPage() {
     <div
       className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8"
       style={{
-        background: "linear-gradient(to right, #0099ff, #ccffff)",
+        background: "linear-gradient(to right,rgb(250, 250, 250), #ccffff)",
         color: "#fff",
       }}
     >
@@ -75,10 +75,10 @@ export default function LoginPage() {
           className="mx-auto h-[150px] w-auto"
         />
         <h2
-          className="mt-6 text-center text-3xl font-bold"
+          className="mt-6 text-center text-3xl font-bold text-black"
           style={{ fontFamily: "Roboto, sans-serif" }}
         >
-          <span className="shine-text">Hostel Management System</span>
+          Hostel Management System
 
         </h2>
 
@@ -139,7 +139,7 @@ export default function LoginPage() {
           {error && <p className="text-red-500">{error}</p>}
           <Button
             type="submit"
-            className="w-full bg-blue-800 hover:bg-blue-600 text-white font-medium rounded-md py-2 transition-all duration-200 ease-in-out transform hover:scale-105"          >
+            className="w-full bg-blue-900 hover:bg-blue-700 text-white font-medium rounded-md py-2 transition-all duration-200 ease-in-out transform hover:scale-105"          >
             Sign in
           </Button>
         </form>

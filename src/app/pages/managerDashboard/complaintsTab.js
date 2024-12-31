@@ -64,13 +64,13 @@ const ComplaintsTab = ({ complaints, setComplaints }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Student Name</TableHead>
-                <TableHead>Reg. No.</TableHead>
-                <TableHead>Room No.</TableHead>
-                <TableHead>Complaint Type</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="text-center">Title</TableHead>
+                <TableHead className="text-center">Student Name</TableHead>
+                <TableHead className="text-center">Reg. No.</TableHead>
+                <TableHead className="text-center">Room No.</TableHead>
+                <TableHead className="text-center">Complaint Type</TableHead>
+                <TableHead className="text-center">Date</TableHead>
+                
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,7 +89,7 @@ const ComplaintsTab = ({ complaints, setComplaints }) => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="bg-green-400 hover:bg-green-600"
+                            className="bg-white hover:bg-blue-900 hover:text-white"
                           >
                             View Details
                           </Button>
@@ -116,7 +116,7 @@ const ComplaintsTab = ({ complaints, setComplaints }) => {
                               </p>
                               <p>
                                 <strong>Complaint Type:</strong>{" "}
-                                {complaint.complaintType}
+                                {complaint.type}
                               </p>
                             </div>
                             <div>
@@ -136,8 +136,8 @@ const ComplaintsTab = ({ complaints, setComplaints }) => {
                         className={`${
                           complaint.status === "resolved"
                             ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-blue-400 hover:bg-blue-600"
-                        } text-white`}
+                            : "bg-white hover:bg-blue-900 hover:text-white"
+                        } text-black`}
                         onClick={() => handleResolve(complaint.id)}
                         disabled={complaint.status === "resolved"}
                       >

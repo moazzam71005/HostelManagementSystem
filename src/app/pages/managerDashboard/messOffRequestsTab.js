@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { UtensilsCrossed } from "lucide-react";
 import supabase from "../../../supabaseClient";
 
-const MessOffRequestsTab = ({ messOffRequests, setMessOffRequests }) => {
+const MessOffRequestsTab = ({ messOffRequests, setMessOffRequests}) => {
   const handleApprove = async (id) => {
     try {
       console.log("Approving mess off request with ID:", id);
@@ -98,8 +98,8 @@ const MessOffRequestsTab = ({ messOffRequests, setMessOffRequests }) => {
                       className={`${
                         request.status === "approved"
                           ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-blue-400 hover:bg-blue-600"
-                      } text-white`}
+                          : "bg-white hover:bg-blue-900 hover:text-white"
+                      } text-black`}
                       onClick={() => handleApprove(request.id)}
                       disabled={request.status === "approved"}
                     >

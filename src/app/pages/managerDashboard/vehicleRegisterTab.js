@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { UtensilsCrossed } from "lucide-react";
+import { Car} from "lucide-react";
 import supabase from "../../../supabaseClient";
 
 const VehicleRegisterTab = ({ vehicleRegister, setVehicleRegister }) => {
@@ -65,7 +65,7 @@ const VehicleRegisterTab = ({ vehicleRegister, setVehicleRegister }) => {
     <Card className="bg-white/70">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
-          <UtensilsCrossed className="w-5 h-5" />
+          <Car className="w-5 h-5" />
           Vehicle Registration
         </CardTitle>
       </CardHeader>
@@ -91,7 +91,7 @@ const VehicleRegisterTab = ({ vehicleRegister, setVehicleRegister }) => {
               {vehicleRegister.map((vehicle) => (
                 <TableRow key={vehicle.id}>
                   <TableCell>{vehicle.studentName}</TableCell>
-                  <TableCell>{vehicle.regNo}</TableCell>
+                  <TableCell>{vehicle.id}</TableCell>
                   <TableCell>{vehicle.roomNo}</TableCell>
                   <TableCell>{vehicle.type}</TableCell>
                   <TableCell>{vehicle.model}</TableCell>
@@ -106,8 +106,8 @@ const VehicleRegisterTab = ({ vehicleRegister, setVehicleRegister }) => {
                       className={`${
                         vehicle.status === "approved"
                           ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-blue-400 hover:bg-blue-600"
-                      } text-white`}
+                          : "bg-white hover:bg-blue-900 hover:text-white"
+                      } text-black`}
                       onClick={() => handleApprove(vehicle.id)}
                       disabled={vehicle.status === "approved"}
                     >

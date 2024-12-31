@@ -144,7 +144,7 @@ const MessOffForm = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
               <Utensils className="w-4 h-4" />
-              <span className='zoom-animation'>Mess Off</span>
+              Mess Off
               </CardTitle>
             </CardHeader>
             <CardContent>

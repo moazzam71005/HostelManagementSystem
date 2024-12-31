@@ -119,7 +119,7 @@ const VehicleForm = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
               <Car className="w-4 h-4" />
-              <span className='zoom-animation'>Register Vehicle</span>
+              Register Vehicle
               </CardTitle>
             </CardHeader>
             <CardContent>

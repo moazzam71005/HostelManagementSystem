@@ -108,7 +108,7 @@ const ComplaintForm = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-6" />
-                <span className='zoom-animation'>Register Complaint</span>
+                Register Complaint
               </CardTitle>
             </CardHeader>
             <CardContent>

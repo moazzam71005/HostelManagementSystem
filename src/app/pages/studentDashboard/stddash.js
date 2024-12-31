@@ -13,6 +13,11 @@ import MessForm from "../MessForm";
 import HostelForm from "../HostelForm";
 import VehicleForm from "../VehicleForm";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Import the Tabs component
+import { TabsContent } from "@radix-ui/react-tabs";
+import ViewComplaints from "./viewComplaints";
+import ViewMessOffStatus from "./ViewMessOffStatus";
+import ViewVehicleStatus from "./ViewVehicleStatus";
+import ViewCleaningStatus from "./ViewCleaningStatus";
 
 export default function StudentDashboard() {
   const searchParams = useSearchParams();
@@ -30,6 +35,13 @@ export default function StudentDashboard() {
     { name: "Campus Security", number: "+92 300 7654321" },
     { name: "Medical Emergency", number: "+92 300 1112223" },
   ];
+
+  const [activeTab, setActiveTab] = useState("main_dashboard");
+
+  // Function to handle tab changes
+  const handleTabChange = (value) => {
+    setActiveTab(value);
+  };
 
   useEffect(() => {
     if (studentId) {
@@ -138,7 +150,7 @@ export default function StudentDashboard() {
               </div>
               <Button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-red-500 text-white hover:bg-red-600"
+                 className="flex items-center gap-2 bg-blue-900 border-2 border-white text-white hover:bg-white hover:border-white hover:text-blue-900"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -149,49 +161,87 @@ export default function StudentDashboard() {
           {/* Tabs for Navigation */}
           <Tabs defaultValue="main_dashboard" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="main_dashboard">Main Dashboard</TabsTrigger>
-              <TabsTrigger value="complaint_status">Complaint Status</TabsTrigger>
-              <TabsTrigger value="messoff_status">Mess Off Status</TabsTrigger>
-              <TabsTrigger value="vehicle_status">Vehicle Status</TabsTrigger>
-              <TabsTrigger value="cleaning_status">Cleaning Status</TabsTrigger>
+              <TabsTrigger
+                value="main_dashboard"
+                className="w-[178px]"
+              >
+                Main Dashboard
+              </TabsTrigger>
+              <TabsTrigger
+                value="complaint_status"
+                className="w-[178px]"
+              >
+                Complaint Status
+              </TabsTrigger>
+              <TabsTrigger
+                value="messoff_status"
+                className="w-[178px]"
+              >
+                Mess Off Status
+              </TabsTrigger>
+              <TabsTrigger
+                value="vehicle_status"
+                className="w-[178px]"
+              >
+                Vehicle Status
+              </TabsTrigger>
+              <TabsTrigger
+                value="cleaning_status"
+                className="w-[178px]"
+              >
+                Cleaning Status
+              </TabsTrigger>
             </TabsList>
+            <TabsContent value = "complaint_status">
+              <ViewComplaints studentId={studentId} />
+            </TabsContent>
+            <TabsContent value = "messoff_status">
+              <ViewMessOffStatus studentId={studentId} />
+            </TabsContent>
+            <TabsContent value = "vehicle_status">
+              <ViewVehicleStatus studentId={studentId} />
+            </TabsContent>
+            <TabsContent value = "cleaning_status">
+              <ViewCleaningStatus studentId={studentId} />
+            </TabsContent>
           </Tabs>
+
+
 
           {/* Cards below tabs */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Room Cleaning */}
             <Card className="transition-transform transform hover:scale-105 hover:shadow-2xl bg-white/70">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bed className="w-4 h-4" />
-                  <span className="zoom-animation">Room Cleaning</span>
+                  Room Cleaning
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Button
                   onClick={handleCleaningRequest}
                   disabled={isCleaningRequested}
-                  className={`w-full ${
-                    isCleaningRequested
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-600 text-white hover:bg-gray-800"
-                  } transition-colors duration-200`}
+                  className={`w-full ${isCleaningRequested ? "bg-gray-700 text-white" : "bg-blue-900 text-white hover:bg-gray-800"} transition-colors duration-200`}
                 >
                   {isCleaningRequested ? "Request Sent" : "Request Cleaning"}
                 </Button>
               </CardContent>
             </Card>
 
+            {/* Complaint Form */}
             <div className="complaints-section">
               <ComplaintForm />
             </div>
 
+            {/* Emergency Contacts */}
             <Dialog>
               <DialogTrigger asChild>
                 <Card className="transition-transform transform hover:scale-105 hover:shadow-2xl bg-white/70">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Phone className="w-4 h-4" />
-                      <span className="zoom-animation">Emergency Contacts</span>
+                      Emergency Contacts
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -207,11 +257,8 @@ export default function StudentDashboard() {
                 <div className="space-y-4">
                   {emergencyContacts.map((contact, index) => (
                     <div key={index} className="flex justify-between items-center">
-                      <span className="font-medium">{contact.name}</span>
-                      <a
-                        href={`tel:${contact.number}`}
-                        className="text-blue-600 hover:underline"
-                      >
+                      {contact.name}
+                      <a href={`tel:${contact.number}`} className="text-blue-600 hover:underline">
                         {contact.number}
                       </a>
                     </div>
@@ -220,21 +267,25 @@ export default function StudentDashboard() {
               </DialogContent>
             </Dialog>
 
+            {/* Mess Off Form */}
             <div className="messform">
               <MessForm />
             </div>
 
+            {/* Hostel In/Out Form */}
             <div className="hostelform">
               <HostelForm />
             </div>
 
+            {/* Vehicle Form */}
             <div className="vehicleform">
               <VehicleForm />
             </div>
           </div>
 
+          
           {/* Important Announcements */}
-          <Card className="bg-white/50 border-blue-500">
+          <Card className="bg-white/50 border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-bold text-red-600 text-xl">
                 <AlertCircle className="w-4 h-4" />
@@ -242,7 +293,6 @@ export default function StudentDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Loop through announcements and display them */}
               {announcements.length > 0 ? (
                 announcements.map((announcement, index) => (
                   <div key={index} className="space-y-4 mb-4">

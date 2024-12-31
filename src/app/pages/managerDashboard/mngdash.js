@@ -34,6 +34,8 @@ import {
   ClipboardList,
   UtensilsCrossed,
   LogOut,
+  WatchIcon,
+  Hourglass,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import supabase from "../../../supabaseClient";
@@ -44,6 +46,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MessOffRequestsTab from "./messOffRequestsTab";
 import VehicleRegisterTab from "./vehicleRegisterTab";
 import CleaningRequestsTab from "./cleaningRequestsTab";
+
 
 
 export default function ManagerDashboard() {
@@ -351,9 +354,9 @@ export default function ManagerDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-teal-300 to-cyan-400 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-200 to-gray-200 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <Card className="bg-white/80">
+        <Card className="bg-blue-900">
           <CardHeader className="flex flex-row items-center gap-4 justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="w-20 h-20 outline outline-2 outline-green-500 outline-offset-2">
@@ -366,10 +369,10 @@ export default function ManagerDashboard() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl font-bold">
+                <CardTitle className="text-2xl font-bold text-gray-200">
                   {manager.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-semibold">
+                <CardDescription className="text-sm font-semibold text-gray-300">
                   {manager.role} | {manager.hostel} Hostel
                 </CardDescription>
               </div>
@@ -377,8 +380,8 @@ export default function ManagerDashboard() {
             <div className="flex flex-col gap-2">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="bg-blue-500 text-white hover:bg-blue-600">
-                    <span className="zoom-animation">Add Announcements</span>
+                  <Button className="bg-blue-900 border-2 border-color-white text-white hover:bg-white hover:text-blue-900">
+                    + Add Announcements 
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -410,7 +413,7 @@ export default function ManagerDashboard() {
               </Dialog>
               <Button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-red-500 text-white hover:bg-red-600"
+                className="flex items-center gap-2 bg-blue-900 border-2 text-white hover:bg-white hover:text-blue-900"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -424,14 +427,14 @@ export default function ManagerDashboard() {
 
         <Tabs defaultValue="complaints" className="space-y-4 ">
           <TabsList>
-            <TabsTrigger value="complaints">Complaints</TabsTrigger>
-            <TabsTrigger value="messoff">Mess Off Requests</TabsTrigger>
-            <TabsTrigger value="inout">Hostel In/Out</TabsTrigger>
-            <TabsTrigger value="awaitingStudents">Pending Students</TabsTrigger>
-            <TabsTrigger value="vehicleregister">
+            <TabsTrigger value="complaints" className="w-[212px]">Complaints</TabsTrigger>
+            <TabsTrigger value="messoff" className="w-[212px]">Mess Off Requests</TabsTrigger>
+            <TabsTrigger value="inout" className="w-[212px]">Hostel In/Out</TabsTrigger>
+            <TabsTrigger value="awaitingStudents" className="w-[212px]">Pending Students</TabsTrigger>
+            <TabsTrigger value="vehicleregister" className="w-[212px]">
               Vehicle Registration
             </TabsTrigger>
-            <TabsTrigger value="cleaningrequests">
+            <TabsTrigger value="cleaningrequests" className="w-[212px]">
               Cleaning Requests
             </TabsTrigger>
           </TabsList>
@@ -442,6 +445,7 @@ export default function ManagerDashboard() {
             <MessOffRequestsTab
               messOffRequests={messOffRequests}
               setMessOffRequests={setMessOffRequests}
+              getStatusBadge={getStatusBadge}
             />
           </TabsContent>
           <TabsContent value="inout">
@@ -500,7 +504,7 @@ export default function ManagerDashboard() {
             <Card className="bg-white/70">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <LogOut className="w-5 h-5" />
+                  <Hourglass className="w-5 h-5" />
                   Pending Students
                 </CardTitle>
               </CardHeader>
@@ -577,22 +581,49 @@ export default function ManagerDashboard() {
             {/* Loop through announcements and display them */}
             {announcements.length > 0 ? (
               announcements.map((announcement, index) => (
-                <div key={index} className="space-y-4 mb-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {announcement.title}
-                    </h3>
-                    <p className="text-md text-gray-500 hover:text-black transition-colors duration-300">
-                      {announcement.description}
-                    </p>
-                  </div>
+                <div
+                  key={index}
+                  className="space-y-4 mb-4 p-4 rounded shadow-sm relative bg-white"
+                >
+                  <button
+                    onClick={async () => {
+                      try {
+                        const { error } = await supabase
+                          .from("announcements")
+                          .delete()
+                          .eq("title", announcement.title) // Using title to identify the announcement
+                          .eq("description", announcement.description); // Include description for additional matching
+
+                        if (error) {
+                          console.error("Error removing announcement:", error.message);
+                          toast.error("Error removing announcement.");
+                          return;
+                        }
+
+                        // Remove the announcement from the frontend
+                        setAnnouncements((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+
+                        toast.success("Announcement removed successfully!");
+                      } catch (err) {
+                        console.error("Unexpected error removing announcement:", err);
+                        toast.error("An unexpected error occurred.");
+                      }
+                    }}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg"
+                  >
+                    &times;
+                  </button>
+                  <h3 className="text-lg font-bold">{announcement.title}</h3>
+                  <p>{announcement.description}</p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">
-                No new announcements at this time.
-              </p>
+              <p className="text-sm text-muted-foreground">No announcements at this time.</p>
             )}
+
+
           </CardContent>
         </Card>
       </div>

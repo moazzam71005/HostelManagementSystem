@@ -104,7 +104,7 @@ const HostelForm = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
               <House className="w-4 h-4" />
-              <span className='zoom-animation'>Hostel In/Out</span>
+              Hostel In/Out
               </CardTitle>
             </CardHeader>
             <CardContent>
